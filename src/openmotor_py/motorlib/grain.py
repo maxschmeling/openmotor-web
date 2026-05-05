@@ -14,6 +14,25 @@ except ImportError:
 from scipy import interpolate
 from scipy.signal import savgol_filter
 
+
+def _distance_map_from_core(core_map, mask, map_dim):
+    if skfmm is not None:
+        masked = np.ma.MaskedArray(core_map, mask)
+        cell_size = 1 / map_dim
+        return skfmm.distance(masked, dx=cell_size) * 2
+
+    from scipy import ndimage
+
+    propellant = np.logical_and(core_map > 0, np.logical_not(mask))
+    if not np.any(propellant):
+        raise ValueError("No propellant cells found")
+
+    # Euclidean distance from propellant pixels to the nearest non-propellant/core pixel.
+    # This is not identical to fast marching, but is a reasonable browser fallback prototype.
+    dist_px = ndimage.distance_transform_edt(propellant)
+    cell_size = 1 / map_dim
+    return dist_px * cell_size * 2
+
 import mathlib
 
 from . import geometry
@@ -401,11 +420,7 @@ class FmmGrain(PerforatedGrain):
 
         The map is stored under self.regressionMap.
         """
-        if skfmm is None:
-            raise ImportError("scikit-fmm is required for FMM grain regression")
-        masked = np.ma.MaskedArray(self.coreMap, self.mask)
-        cellSize = 1 / self.mapDim
-        self.regressionMap = skfmm.distance(masked, dx=cellSize) * 2
+        self.regressionMap = _distance_map_from_core(self.coreMap, self.mask, self.mapDim)
         maxDist = np.amax(self.regressionMap)
         self.wallWeb = self.unNormalize(maxDist)
         faceArea = []

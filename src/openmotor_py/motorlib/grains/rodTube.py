@@ -7,7 +7,7 @@ except ImportError:
     skfmm = None
 import mathlib
 
-from ..grain import PerforatedGrain
+from ..grain import PerforatedGrain, _distance_map_from_core
 from .. import geometry
 from ..simResult import SimAlert, SimAlertLevel, SimAlertType
 from ..properties import FloatProperty
@@ -104,7 +104,7 @@ class RodTubeGrain(PerforatedGrain):
             cellSize = 1 / mapDim
             if skfmm is None:
                 raise ImportError("scikit-fmm is required for regression contours")
-            regressionMap = skfmm.distance(masked, dx=cellSize) * 2
+            regressionMap = _distance_map_from_core(masked, np.zeros_like(masked, dtype=bool), mapDim)
             regmax = np.amax(regressionMap)
             regressionMap = regressionMap[:, :].copy()
             if coreBlack:

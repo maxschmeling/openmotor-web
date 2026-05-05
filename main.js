@@ -96,6 +96,22 @@ try:
         'designation': sim.getDesignation() if sim.channels['force'].data else None,
         'samples': len(sim.channels['time'].data),
     }
+
+    sg = motorlib.grains.StarGrain()
+    sg.setProperties({
+        'diameter': 0.05,
+        'length': 0.1,
+        'numPoints': 6,
+        'pointLength': 0.015,
+        'pointWidth': 0.01,
+        'inhibitedEnds': 'Both'
+    })
+    sg.simulationSetup(tc)
+    result['fmm_probe'] = {
+        'wallWeb': sg.wallWeb,
+        'faceArea0': float(sg.getFaceArea(0)),
+        'perimeter0': float(sg.getCorePerimeter(0)),
+    }
 except Exception as exc:
     result = {
         'error': str(exc),

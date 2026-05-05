@@ -1,8 +1,15 @@
 from .endBurner import *
 from .bates import *
+from .star import *
+from .finocyl import *
+from .moonBurner import *
+from .xCore import *
+from .cGrain import *
+from .dGrain import *
+from .rodTube import *
+from .conical import *
 
-# Limited import surface for Pyodide spike; FMM grains gated on scikit-fmm availability
 grainTypes = {}
-grainClasses = [BatesGrain, EndBurningGrain]
+grainClasses = [BatesGrain, Finocyl, MoonBurner, XCore, CGrain, DGrain, RodTubeGrain, ConicalGrain, StarGrain, EndBurningGrain]
 for grainType in grainClasses:
     grainTypes[grainType.geomName] = grainType
