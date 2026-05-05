@@ -75,23 +75,29 @@ def make_motor(motor_mod, prop_mod, grains_mod, grain_name, grain_props):
 
 
 def run_probe(motor_mod, prop_mod, grains_mod, grain_name, grain_props):
+    print(f"start {grain_name}", file=sys.stderr, flush=True)
     m, g = make_motor(motor_mod, prop_mod, grains_mod, grain_name, grain_props)
     config = motor_mod.MotorConfig()
     config.setProperties({'mapDim': 401})
+    print(f"setup {grain_name}", file=sys.stderr, flush=True)
     g.simulationSetup(config)
+    print(f"setup-done {grain_name}", file=sys.stderr, flush=True)
     sim = None
     sim_error = None
-    if grain_name == "BatesGrain":
-        try:
-            sim = m.runSimulation()
-        except Exception as exc:
-            sim_error = repr(exc)
+    print(f"sim {grain_name}", file=sys.stderr, flush=True)
+    try:
+        sim = m.runSimulation()
+    except Exception as exc:
+        sim_error = repr(exc)
     out = {
         'wallWeb': float(g.wallWeb) if getattr(g, 'wallWeb', None) is not None else None,
         'faceArea0': float(g.getFaceArea(0)) if hasattr(g, 'getFaceArea') else None,
         'perimeter0': float(g.getCorePerimeter(0)) if hasattr(g, 'getCorePerimeter') else None,
         'simError': sim_error,
+        'kn0': float(m.calcKN([0], 0)),
+        'pressure0': float(m.calcIdealPressure([0], 0)),
     }
+    print(f"sim-done {grain_name} err={sim_error}", file=sys.stderr, flush=True)
     if sim is not None:
         out['sim'] = {
             'success': bool(sim.success),
@@ -138,35 +144,12 @@ def compare_case(label, grain_name, grain_props):
 
 
 cases = [
-    ('BATES baseline', 'BatesGrain', {
-        'diameter': 0.083058,
-        'length': 0.1397,
-        'coreDiameter': 0.05,
-        'inhibitedEnds': 'Neither'
-    }),
     ('Star 6-point', 'StarGrain', {
         'diameter': 0.05,
         'length': 0.1,
         'numPoints': 6,
         'pointLength': 0.015,
         'pointWidth': 0.01,
-        'inhibitedEnds': 'Both'
-    }),
-    ('Finocyl', 'Finocyl', {
-        'diameter': 0.06,
-        'length': 0.12,
-        'numFins': 6,
-        'finWidth': 0.006,
-        'finLength': 0.012,
-        'coreDiameter': 0.02,
-        'invertedFins': False,
-        'inhibitedEnds': 'Both'
-    }),
-    ('Moon burner', 'MoonBurner', {
-        'diameter': 0.06,
-        'length': 0.12,
-        'coreDiameter': 0.02,
-        'coreOffset': 0.008,
         'inhibitedEnds': 'Both'
     }),
 ]

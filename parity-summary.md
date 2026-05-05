@@ -2,47 +2,51 @@
 
 Compared desktop openMotor against the browser Pyodide fallback for representative grains.
 
-## Current result
+## Confirmed working
 
 ### BATES
 - Exact match across tested outputs
 - Burn time / peak pressure / impulse matched in the harness
 
-### FMM-style grain geometry
+### FMM-style geometry
 Tested:
 - Star
 - Finocyl
 - MoonBurner
 
-For these, the browser fallback now matches desktop on the geometry metrics tested:
+For these, the browser fallback matches desktop on the geometry metrics tested:
 - `wallWeb`
 - `faceArea0`
 - `perimeter0`
 
 Observed deltas were effectively zero in this harness (floating-point noise only).
 
-## What changed
+## Current blocker for full FMM simulation parity
 
-The earlier failures were caused by the pure-Python marching-squares perimeter helper mishandling masked arrays and converting masked values into `NaN` in a way that polluted contour logic.
+When extending the harness to run full desktop-vs-browser simulations for FMM grains, the browser fallback path stalled during `runSimulation()` for the tested Star grain case.
 
-That path was fixed by explicitly preparing the input array and skipping cells containing `NaN` values.
-
-## Important caveat
-
-This is a strong signal, but it is still not full scientific parity proof.
-
-What has been shown:
-- Pyodide reuse of openMotor core is viable
-- browser fallback geometry for tested FMM grains can closely match desktop for the sampled metrics
-- non-FMM simulation works in-browser
-
-What is still not shown:
-- full FMM-grain simulation parity across burn curves and outputs
-- parity across all grain families
-- behavior for `CustomGrain` / `scikit-image` dependent paths
+That means:
+- the geometry/regression-map side now looks healthy
+- the next issue is deeper in the simulation loop under browser-fallback conditions
+- the likely culprit is an interaction between the fallback distance-map behavior and later simulation-step calculations (mass flux / Mach / pressure evolution), not the contour helper anymore
 
 ## Practical conclusion
 
-The browser port is looking much more realistic now.
+This is still encouraging:
+- Pyodide reuse of openMotor core is viable
+- non-FMM grains are working end-to-end
+- FMM grain geometry parity looks strong for tested cases
 
-The next best step is to extend the harness so FMM-grain full simulations are compared end-to-end, not just geometry-derived metrics.
+But full FMM simulation parity is **not proven yet**.
+
+## Recommended next step
+
+Instrument the browser-fallback `runSimulation()` loop for one FMM grain and identify where it stops progressing:
+- regression increment (`dRegDist`)
+- pressure / Kn evolution
+- Mach calculation
+- burnout termination conditions
+
+That should reveal whether the fallback needs:
+1. a numeric guard/fix, or
+2. a more faithful distance-map implementation for dynamic simulation.

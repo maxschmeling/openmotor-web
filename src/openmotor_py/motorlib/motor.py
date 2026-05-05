@@ -177,12 +177,16 @@ class Motor:
             return 1.0
 
         x0 = np.arcsin(massFlux / maxMassFlux) * 2 / np.pi
-        M = newton(
-            machFunc,
-            fprime=machFuncDerivative,
-            x0=x0,
-            args=(chamberPres, massFlux, gamma, T, molarMass, gasConstant),
-        )
+        try:
+            M = newton(
+                machFunc,
+                fprime=machFuncDerivative,
+                x0=x0,
+                args=(chamberPres, massFlux, gamma, T, molarMass, gasConstant),
+                maxiter=50,
+            )
+        except Exception:
+            return 1.0
 
         return max(M, 0)
 
