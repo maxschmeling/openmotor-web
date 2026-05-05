@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>openMotor Web</title>
+    <style>
+      :root { color-scheme: dark; }
+      body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: #111827; color: #e5e7eb; }
+      main { max-width: 920px; margin: 0 auto; padding: 32px 20px 64px; }
+      h1 { margin-top: 0; }
+      button { background: #2563eb; color: white; border: 0; padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; }
+      button:disabled { opacity: .6; cursor: wait; }
+      .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; padding: 16px; margin: 16px 0; }
+      pre { white-space: pre-wrap; word-break: break-word; background: #0b1220; padding: 12px; border-radius: 8px; overflow: auto; }
+      .ok { color: #86efac; }
+      .warn { color: #fbbf24; }
+      .err { color: #fca5a5; }
+    </style>
+    <script type="module" crossorigin src="/openmotor-web/assets/index-AvnX9Agr.js"></script>
+  </head>
+  <body>
+    <main>
+      <h1>openMotor Web</h1>
+      <p>Pyodide viability spike. Goal: prove reused simulation code can run entirely in the browser.</p>
+      <div class="card">
+        <button id="run">Run Pyodide simulation smoke test</button>
+        <p id="status">Idle.</p>
+      </div>
+      <div class="card">
+        <h2>Output</h2>
+        <pre id="output"></pre>
+      </div>
+    </main>
+  </body>
+</html>
