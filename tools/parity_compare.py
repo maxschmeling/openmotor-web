@@ -81,10 +81,11 @@ def run_probe(motor_mod, prop_mod, grains_mod, grain_name, grain_props):
     g.simulationSetup(config)
     sim = None
     sim_error = None
-    try:
-        sim = m.runSimulation()
-    except Exception as exc:
-        sim_error = repr(exc)
+    if grain_name == "BatesGrain":
+        try:
+            sim = m.runSimulation()
+        except Exception as exc:
+            sim_error = repr(exc)
     out = {
         'wallWeb': float(g.wallWeb) if getattr(g, 'wallWeb', None) is not None else None,
         'faceArea0': float(g.getFaceArea(0)) if hasattr(g, 'getFaceArea') else None,

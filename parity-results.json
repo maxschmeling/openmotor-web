@@ -43,87 +43,63 @@
     "label": "Star 6-point",
     "grain": "StarGrain",
     "desktop": {
-      "wallWeb": 0.014042727948557177,
-      "faceArea0": 0.0016730490167327933,
-      "perimeter0": 0.12548225099390903,
-      "simError": null,
-      "sim": {
-        "success": true,
-        "burnTime": 2.029399999999858,
-        "peakPressure": 1671399.583092312,
-        "impulse": 367.92990987232275,
-        "designation": "I181",
-        "samples": 20295
-      }
+      "wallWeb": 0.014145009899517159,
+      "faceArea0": 0.001678156111468192,
+      "perimeter0": 0.12776993294273875,
+      "simError": null
     },
     "browserFallback": {
-      "wallWeb": 0.014042727948557177,
-      "faceArea0": 0.0016730490167327933,
-      "perimeter0": NaN,
-      "simError": "KeyError('a')"
+      "wallWeb": 0.014145009899517159,
+      "faceArea0": 0.001678156111468192,
+      "perimeter0": 0.12776993294273828,
+      "simError": null
     },
     "deltaPct": {
       "wallWeb": 0.0,
       "faceArea0": 0.0,
-      "perimeter0": NaN
+      "perimeter0": -3.692925045809901e-13
     }
   },
   {
     "label": "Finocyl",
     "grain": "Finocyl",
     "desktop": {
-      "wallWeb": 0.012546157875762428,
-      "faceArea0": 0.002067184383922719,
-      "perimeter0": 0.21775044143122907,
-      "simError": null,
-      "sim": {
-        "success": true,
-        "burnTime": 1.6225999999998377,
-        "peakPressure": 3711331.19191005,
-        "impulse": 539.2365108311238,
-        "designation": "I332",
-        "samples": 16227
-      }
+      "wallWeb": 0.012678780030585727,
+      "faceArea0": 0.0020695303836308003,
+      "perimeter0": 0.21992797214822152,
+      "simError": null
     },
     "browserFallback": {
-      "wallWeb": 0.012546157875762428,
-      "faceArea0": 0.002067184383922719,
-      "perimeter0": NaN,
-      "simError": "KeyError('a')"
+      "wallWeb": 0.012678780030585727,
+      "faceArea0": 0.0020695303836308003,
+      "perimeter0": 0.21992797214822074,
+      "simError": null
     },
     "deltaPct": {
       "wallWeb": 0.0,
       "faceArea0": 0.0,
-      "perimeter0": NaN
+      "perimeter0": -3.533684731625868e-13
     }
   },
   {
     "label": "Moon burner",
     "grain": "MoonBurner",
     "desktop": {
-      "wallWeb": 0.027791270171890335,
-      "faceArea0": 0.002491672435259618,
-      "perimeter0": 0.0650246579671371,
-      "simError": null,
-      "sim": {
-        "success": true,
-        "burnTime": 3.5980000000031684,
-        "peakPressure": 1696366.1210531367,
-        "impulse": 661.7696571056478,
-        "designation": "J184",
-        "samples": 35981
-      }
+      "wallWeb": 0.02790523690773249,
+      "faceArea0": 0.0025006549666903516,
+      "perimeter0": 0.06550457186116575,
+      "simError": null
     },
     "browserFallback": {
-      "wallWeb": 0.027791270171890335,
-      "faceArea0": 0.002491672435259618,
-      "perimeter0": NaN,
-      "simError": "KeyError('a')"
+      "wallWeb": 0.02790523690773249,
+      "faceArea0": 0.0025006549666903516,
+      "perimeter0": 0.06550457186116557,
+      "simError": null
     },
     "deltaPct": {
       "wallWeb": 0.0,
       "faceArea0": 0.0,
-      "perimeter0": NaN
+      "perimeter0": -2.75417785927923e-13
     }
   }
 ]

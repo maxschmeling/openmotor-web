@@ -2,16 +2,28 @@ import numpy as np
 from collections import deque
 
 
+def _prepare_image(image):
+    if isinstance(image, np.ma.MaskedArray):
+        data = np.asarray(image.filled(np.nan), dtype=float)
+    else:
+        data = np.asarray(image, dtype=float)
+    return data
+
+
 def _marching_squares_segments(image, level, fully_connected_low=True):
-    rows, cols = image.shape
+    data = _prepare_image(image)
+    rows, cols = data.shape
     segments = []
 
     for r in range(rows - 1):
         for c in range(cols - 1):
-            tl = float(image[r, c])
-            tr = float(image[r, c + 1])
-            br = float(image[r + 1, c + 1])
-            bl = float(image[r + 1, c])
+            tl = data[r, c]
+            tr = data[r, c + 1]
+            br = data[r + 1, c + 1]
+            bl = data[r + 1, c]
+
+            if np.isnan(tl) or np.isnan(tr) or np.isnan(br) or np.isnan(bl):
+                continue
 
             pts = []
 
@@ -46,7 +58,7 @@ def _marching_squares_segments(image, level, fully_connected_low=True):
 
 
 def _segment_length(a, b):
-    return float(((a[0]-b[0])**2 + (a[1]-b[1])**2) ** 0.5)
+    return float(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5)
 
 
 def find_perimeter(image, level, *, including_contours=False, fully_connected='low'):
@@ -66,7 +78,10 @@ def _assemble_contours(segments):
     contours = {}
     starts = {}
     ends = {}
-    norm = lambda p: (round(p[0], 8), round(p[1], 8))
+
+    def norm(p):
+        return (round(p[0], 8), round(p[1], 8))
+
     for from_point, to_point in segments:
         if norm(from_point) == norm(to_point):
             continue
