@@ -1,0 +1,129 @@
+[
+  {
+    "label": "BATES baseline",
+    "grain": "BatesGrain",
+    "desktop": {
+      "wallWeb": 0.016529000000000002,
+      "faceArea0": 0.0034546769947480134,
+      "perimeter0": 0.15707963267948966,
+      "simError": null,
+      "sim": {
+        "success": true,
+        "burnTime": 1.2678999999998768,
+        "peakPressure": 4221432.395075777,
+        "impulse": 1116.366319644686,
+        "designation": "J880",
+        "samples": 12680
+      }
+    },
+    "browserFallback": {
+      "wallWeb": 0.016529000000000002,
+      "faceArea0": 0.0034546769947480134,
+      "perimeter0": 0.15707963267948966,
+      "simError": null,
+      "sim": {
+        "success": true,
+        "burnTime": 1.2678999999998768,
+        "peakPressure": 4221432.395075777,
+        "impulse": 1116.366319644686,
+        "designation": "J880",
+        "samples": 12680
+      }
+    },
+    "deltaPct": {
+      "wallWeb": 0.0,
+      "faceArea0": 0.0,
+      "perimeter0": 0.0,
+      "burnTime": 0.0,
+      "peakPressure": 0.0,
+      "impulse": 0.0
+    }
+  },
+  {
+    "label": "Star 6-point",
+    "grain": "StarGrain",
+    "desktop": {
+      "wallWeb": 0.014042727948557177,
+      "faceArea0": 0.0016730490167327933,
+      "perimeter0": 0.12548225099390903,
+      "simError": null,
+      "sim": {
+        "success": true,
+        "burnTime": 2.029399999999858,
+        "peakPressure": 1671399.583092312,
+        "impulse": 367.92990987232275,
+        "designation": "I181",
+        "samples": 20295
+      }
+    },
+    "browserFallback": {
+      "wallWeb": 0.014042727948557177,
+      "faceArea0": 0.0016730490167327933,
+      "perimeter0": NaN,
+      "simError": "KeyError('a')"
+    },
+    "deltaPct": {
+      "wallWeb": 0.0,
+      "faceArea0": 0.0,
+      "perimeter0": NaN
+    }
+  },
+  {
+    "label": "Finocyl",
+    "grain": "Finocyl",
+    "desktop": {
+      "wallWeb": 0.012546157875762428,
+      "faceArea0": 0.002067184383922719,
+      "perimeter0": 0.21775044143122907,
+      "simError": null,
+      "sim": {
+        "success": true,
+        "burnTime": 1.6225999999998377,
+        "peakPressure": 3711331.19191005,
+        "impulse": 539.2365108311238,
+        "designation": "I332",
+        "samples": 16227
+      }
+    },
+    "browserFallback": {
+      "wallWeb": 0.012546157875762428,
+      "faceArea0": 0.002067184383922719,
+      "perimeter0": NaN,
+      "simError": "KeyError('a')"
+    },
+    "deltaPct": {
+      "wallWeb": 0.0,
+      "faceArea0": 0.0,
+      "perimeter0": NaN
+    }
+  },
+  {
+    "label": "Moon burner",
+    "grain": "MoonBurner",
+    "desktop": {
+      "wallWeb": 0.027791270171890335,
+      "faceArea0": 0.002491672435259618,
+      "perimeter0": 0.0650246579671371,
+      "simError": null,
+      "sim": {
+        "success": true,
+        "burnTime": 3.5980000000031684,
+        "peakPressure": 1696366.1210531367,
+        "impulse": 661.7696571056478,
+        "designation": "J184",
+        "samples": 35981
+      }
+    },
+    "browserFallback": {
+      "wallWeb": 0.027791270171890335,
+      "faceArea0": 0.002491672435259618,
+      "perimeter0": NaN,
+      "simError": "KeyError('a')"
+    },
+    "deltaPct": {
+      "wallWeb": 0.0,
+      "faceArea0": 0.0,
+      "perimeter0": NaN
+    }
+  }
+]
