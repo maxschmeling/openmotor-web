@@ -1,6 +1,7 @@
 import { loadPyodide } from 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs'
 const files = import.meta.glob('../openmotor_py/**/*.py', { query: '?raw', import: 'default', eager: true })
 let pyodidePromise
+
 export async function getPyodide() {
   if (!pyodidePromise) {
     pyodidePromise = (async () => {
@@ -18,10 +19,18 @@ export async function getPyodide() {
   }
   return pyodidePromise
 }
-export async function runMotorSimulation(motor) {
+
+async function runPythonJson(script, globals = {}) {
   const pyodide = await getPyodide()
-  pyodide.globals.set('motor_input_json', JSON.stringify(motor))
-  const raw = await pyodide.runPythonAsync(`
+  for (const [key, value] of Object.entries(globals)) {
+    pyodide.globals.set(key, typeof value === 'string' ? value : JSON.stringify(value))
+  }
+  const raw = await pyodide.runPythonAsync(script)
+  return JSON.parse(raw)
+}
+
+export function runMotorSimulation(motor) {
+  return runPythonJson(`
 import json, traceback
 result = {}
 try:
@@ -57,6 +66,32 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`)
-  return JSON.parse(raw)
+`, { motor_input_json: motor })
+}
+
+export function exportRicYaml(motor) {
+  return runPythonJson(`
+import json, traceback
+result = {}
+try:
+    import yaml
+    result = {'yaml': yaml.safe_dump(json.loads(motor_input_json), sort_keys=False)}
+except Exception as exc:
+    result = {'error': str(exc), 'traceback': traceback.format_exc()}
+json.dumps(result)
+`, { motor_input_json: motor })
+}
+
+export function importRicYaml(yamlText) {
+  return runPythonJson(`
+import json, traceback
+result = {}
+try:
+    import yaml
+    data = yaml.safe_load(input_yaml)
+    result = {'motor': data}
+except Exception as exc:
+    result = {'error': str(exc), 'traceback': traceback.format_exc()}
+json.dumps(result)
+`, { input_yaml: yamlText })
 }
