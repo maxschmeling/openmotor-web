@@ -107,16 +107,17 @@ try:
     grain = m.grains[grain_index]
     grain.simulationSetup(m.config)
     masked, regression_map, contours, contour_lengths = grain.getRegressionData(m.config.getProperty('mapDim'), 12, True)
-
-    face = []
-    if masked is not None:
-        filled = masked.filled(-1).tolist() if hasattr(masked, 'filled') else masked.tolist()
-        face = filled
-
+    face = masked.filled(-1).tolist() if masked is not None and hasattr(masked, 'filled') else []
+    clean_contours = []
+    for layer in contours:
+        layer_out = []
+        for contour in layer:
+            layer_out.append([[float(p[0]), float(p[1])] for p in contour])
+        clean_contours.append(layer_out)
     result = {
         'grainType': grain.geomName,
         'faceImage': face,
-        'contours': contours,
+        'contours': clean_contours,
         'contourLengths': {str(k): v for k, v in contour_lengths.items()},
         'wallWeb': getattr(grain, 'wallWeb', None),
     }

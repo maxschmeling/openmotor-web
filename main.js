@@ -1,7 +1,7 @@
 import { defaultMotor, grainTemplates } from './src/lib/openmotor-defaults.js'
 import { getPyodide, runMotorSimulation, exportRicYaml, importRicYaml, getGrainPreview } from './src/lib/openmotor-pyodide.js'
 
-const state = { motor: structuredClone(defaultMotor), selectedGrain: 0, result: null, grainPreview: null, status: 'Booting…', running: false, previewing: false, fileName: 'untitled.ric' }
+const state = { motor: structuredClone(defaultMotor), selectedGrain: 0, result: null, grainPreview: null, previewLayer: 0, status: 'Booting…', running: false, previewing: false, fileName: 'untitled.ric' }
 const app = document.getElementById('app')
 const allInhibited = ['Neither', 'Top', 'Bottom', 'Both']
 const num = (v) => Number.isFinite(v) ? v : 0
@@ -14,10 +14,8 @@ function scalarFields(obj, scope, textKeys = []) { return Object.entries(obj).ma
 function renderPreview() {
   if (state.grainPreview?.error) return `<pre class="error">${state.grainPreview.error}\n\n${state.grainPreview.traceback || ''}</pre>`
   if (!state.grainPreview?.faceImage?.length) return `<p class="muted">No preview yet.</p>`
-  const size = 260
   const data = state.grainPreview.faceImage
   const rows = data.length, cols = data[0]?.length || 0
-  const cell = Math.max(1, Math.floor(size / Math.max(rows, cols)))
   let rects = ''
   for (let y = 0; y < rows; y += 2) {
     for (let x = 0; x < cols; x += 2) {
@@ -29,7 +27,18 @@ function renderPreview() {
       rects += `<rect x="${x/2}" y="${y/2}" width="1" height="1" fill="${fill}" />`
     }
   }
-  return `<div class="preview-meta"><span>Type: ${state.grainPreview.grainType}</span><span>Wall web: ${fmt(state.grainPreview.wallWeb)}</span></div><svg viewBox="0 0 ${Math.ceil(cols/2)} ${Math.ceil(rows/2)}" class="grain-preview">${rects}</svg>`
+  const layers = state.grainPreview.contours || []
+  const activeLayers = layers.slice(0, state.previewLayer + 1)
+  const polylines = activeLayers.flatMap((layer, idx) => layer.map(contour => {
+    const pts = contour.map(([x, y]) => `${x/2},${y/2}`).join(' ')
+    const hue = 200 - idx * 10
+    return `<polyline fill="none" stroke="hsl(${hue} 90% 65%)" stroke-width="0.9" points="${pts}" opacity="0.95" />`
+  })).join('')
+  const maxLayer = Math.max(0, layers.length - 1)
+  return `
+    <div class="preview-meta"><span>Type: ${state.grainPreview.grainType}</span><span>Wall web: ${fmt(state.grainPreview.wallWeb)}</span></div>
+    <label class="field"><span>Regression layer ${state.previewLayer + 1} / ${layers.length || 1}</span><input id="preview-layer" type="range" min="0" max="${maxLayer}" value="${Math.min(state.previewLayer, maxLayer)}" step="1"></label>
+    <svg viewBox="0 0 ${Math.ceil(cols/2)} ${Math.ceil(rows/2)}" class="grain-preview">${rects}${polylines}</svg>`
 }
 
 function render() {
@@ -53,7 +62,7 @@ function render() {
         <main class="main">
           <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, plots.</p></section>
           <section class="stats-grid">${[['Designation', stats.designation], ['Impulse (Ns)', fmt(stats.impulse)], ['ISP (s)', fmt(stats.isp)], ['Burn time (s)', fmt(stats.burnTime)], ['Volume loading (%)', fmt(stats.volumeLoading)], ['Avg pressure (Pa)', fmt(stats.avgPressure, 0)], ['Peak pressure (Pa)', fmt(stats.peakPressure, 0)], ['Initial Kn', fmt(stats.initialKn)], ['Peak Kn', fmt(stats.peakKn)], ['Propellant mass (kg)', fmt(stats.propellantMass)]].map(([k,v]) => `<div class="stat"><span>${k}</span><strong>${v ?? '—'}</strong></div>`).join('')}</section>
-          <section class="panel results-layout"><div><h3>Alerts</h3>${state.result?.error ? `<pre class="error">${state.result.error}\n\n${state.result.traceback || ''}</pre>` : ''}<ul class="alerts">${(state.result?.alerts || []).map(a => `<li><strong>${a.level}</strong> ${a.type}: ${a.description}${a.location ? ` <span class="muted">(${a.location})</span>` : ''}</li>`).join('') || '<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain preview</h3>${renderPreview()}</div></section>
+          <section class="panel results-layout"><div><h3>Alerts</h3>${state.result?.error ? `<pre class="error">${state.result.error}\n\n${state.result.traceback || ''}</pre>` : ''}<ul class="alerts">${(state.result?.alerts || []).map(a => `<li><strong>${a.level}</strong> ${a.type}: ${a.description}${a.location ? ` <span class="muted">(${a.location})</span>` : ''}</li>`).join('') || '<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain regression preview</h3>${renderPreview()}</div></section>
           <section class="panel"><h3>Plots</h3>${renderChart('force', 'Force', state.result?.channels?.time, state.result?.channels?.force)}${renderChart('pressure', 'Pressure', state.result?.channels?.time, state.result?.channels?.pressure)}${renderChart('kn', 'Kn', state.result?.channels?.time, state.result?.channels?.kn)}</section>
         </main>
       </div>
@@ -70,7 +79,7 @@ function renderChart(id, title, xs, ys) {
 
 async function saveRic() { state.status = 'Exporting .ric…'; render(); const exported = await exportRicYaml(state.motor); if (exported.error) { state.result = exported; state.status = 'Export failed.'; render(); return } const blob = new Blob([exported.yaml], { type: 'application/x-yaml' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = state.fileName || 'motor.ric'; a.click(); URL.revokeObjectURL(url); state.status = 'Saved .ric file.'; render() }
 async function loadRic(file) { const text = await file.text(); state.status = 'Importing .ric…'; render(); const imported = await importRicYaml(text); if (imported.error) { state.result = imported; state.status = 'Import failed.' } else { state.motor = imported.motor; state.fileName = file.name || 'imported.ric'; state.selectedGrain = 0; state.result = null; state.grainPreview = null; state.status = 'Imported .ric file.' } render() }
-async function loadPreview() { state.previewing = true; state.status = 'Generating grain preview…'; render(); try { state.grainPreview = await getGrainPreview(state.motor, state.selectedGrain); state.status = state.grainPreview.error ? 'Preview failed.' : 'Preview ready.' } catch (err) { state.grainPreview = { error: String(err?.stack || err) }; state.status = 'Preview failed.' } finally { state.previewing = false; render() } }
+async function loadPreview() { state.previewing = true; state.status = 'Generating grain preview…'; render(); try { state.grainPreview = await getGrainPreview(state.motor, state.selectedGrain); state.previewLayer = Math.max(0, (state.grainPreview.contours?.length || 1) - 1); state.status = state.grainPreview.error ? 'Preview failed.' : 'Preview ready.' } catch (err) { state.grainPreview = { error: String(err?.stack || err) }; state.status = 'Preview failed.' } finally { state.previewing = false; render() } }
 
 function bindEvents() {
   document.querySelectorAll('[data-grain-index]').forEach(el => el.onclick = () => { state.selectedGrain = Number(el.dataset.grainIndex); state.grainPreview = null; render() })
@@ -83,6 +92,7 @@ function bindEvents() {
   document.getElementById('dup-grain').onclick = () => { const g = state.motor.grains[state.selectedGrain]; state.motor.grains.splice(state.selectedGrain + 1, 0, structuredClone(g)); state.selectedGrain++; state.grainPreview = null; render() }
   document.getElementById('del-grain').onclick = () => { state.motor.grains.splice(state.selectedGrain, 1); state.selectedGrain = Math.max(0, state.selectedGrain - 1); state.grainPreview = null; render() }
   document.getElementById('run-sim').onclick = async () => { state.running = true; state.status = 'Running simulation in Pyodide…'; render(); try { state.result = await runMotorSimulation(state.motor); state.status = state.result.error ? 'Simulation failed.' : 'Simulation complete.' } catch (err) { state.result = { error: String(err?.stack || err) }; state.status = 'Simulation bootstrap failed.' } finally { state.running = false; render() } }
+  document.getElementById('preview-layer')?.addEventListener('input', (e) => { state.previewLayer = Number(e.target.value); render() })
   document.querySelectorAll('input[data-scope], select[data-scope]').forEach(el => { el.onchange = (e) => { const { scope, key } = e.target.dataset; let value; if (e.target.type === 'checkbox') value = e.target.checked; else if (e.target.type === 'number') value = num(parseFloat(e.target.value)); else value = e.target.value; if (scope === 'grain') state.motor.grains[state.selectedGrain].properties[key] = value; else if (scope === 'nozzle') state.motor.nozzle[key] = value; else if (scope === 'propellant') state.motor.propellant[key] = value; else if (scope === 'tab') state.motor.propellant.tabs[0][key] = value; else if (scope === 'config') state.motor.config[key] = value; state.grainPreview = null } })
 }
 
