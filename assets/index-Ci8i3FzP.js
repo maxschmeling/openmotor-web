@@ -2,16 +2,28 @@ import{loadPyodide as f}from"https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodi
 from collections import deque
 
 
+def _prepare_image(image):
+    if isinstance(image, np.ma.MaskedArray):
+        data = np.asarray(image.filled(np.nan), dtype=float)
+    else:
+        data = np.asarray(image, dtype=float)
+    return data
+
+
 def _marching_squares_segments(image, level, fully_connected_low=True):
-    rows, cols = image.shape
+    data = _prepare_image(image)
+    rows, cols = data.shape
     segments = []
 
     for r in range(rows - 1):
         for c in range(cols - 1):
-            tl = float(image[r, c])
-            tr = float(image[r, c + 1])
-            br = float(image[r + 1, c + 1])
-            bl = float(image[r + 1, c])
+            tl = data[r, c]
+            tr = data[r, c + 1]
+            br = data[r + 1, c + 1]
+            bl = data[r + 1, c]
+
+            if np.isnan(tl) or np.isnan(tr) or np.isnan(br) or np.isnan(bl):
+                continue
 
             pts = []
 
@@ -46,7 +58,7 @@ def _marching_squares_segments(image, level, fully_connected_low=True):
 
 
 def _segment_length(a, b):
-    return float(((a[0]-b[0])**2 + (a[1]-b[1])**2) ** 0.5)
+    return float(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5)
 
 
 def find_perimeter(image, level, *, including_contours=False, fully_connected='low'):
@@ -66,7 +78,10 @@ def _assemble_contours(segments):
     contours = {}
     starts = {}
     ends = {}
-    norm = lambda p: (round(p[0], 8), round(p[1], 8))
+
+    def norm(p):
+        return (round(p[0], 8), round(p[1], 8))
+
     for from_point, to_point in segments:
         if norm(from_point) == norm(to_point):
             continue
@@ -238,6 +253,25 @@ except ImportError:
     skfmm = None
 from scipy import interpolate
 from scipy.signal import savgol_filter
+
+
+def _distance_map_from_core(core_map, mask, map_dim):
+    if skfmm is not None:
+        masked = np.ma.MaskedArray(core_map, mask)
+        cell_size = 1 / map_dim
+        return skfmm.distance(masked, dx=cell_size) * 2
+
+    from scipy import ndimage
+
+    propellant = np.logical_and(core_map > 0, np.logical_not(mask))
+    if not np.any(propellant):
+        raise ValueError("No propellant cells found")
+
+    # Euclidean distance from propellant pixels to the nearest non-propellant/core pixel.
+    # This is not identical to fast marching, but is a reasonable browser fallback prototype.
+    dist_px = ndimage.distance_transform_edt(propellant)
+    cell_size = 1 / map_dim
+    return dist_px * cell_size * 2
 
 import mathlib
 
@@ -626,11 +660,7 @@ class FmmGrain(PerforatedGrain):
 
         The map is stored under self.regressionMap.
         """
-        if skfmm is None:
-            raise ImportError("scikit-fmm is required for FMM grain regression")
-        masked = np.ma.MaskedArray(self.coreMap, self.mask)
-        cellSize = 1 / self.mapDim
-        self.regressionMap = skfmm.distance(masked, dx=cellSize) * 2
+        self.regressionMap = _distance_map_from_core(self.coreMap, self.mask, self.mapDim)
         maxDist = np.amax(self.regressionMap)
         self.wallWeb = self.unNormalize(maxDist)
         faceArea = []
@@ -708,13 +738,20 @@ class FmmGrain(PerforatedGrain):
         return (masked, regressionMap, contours, contourLengths)
 `,y=`from .endBurner import *
 from .bates import *
+from .star import *
+from .finocyl import *
+from .moonBurner import *
+from .xCore import *
+from .cGrain import *
+from .dGrain import *
+from .rodTube import *
+from .conical import *
 
-# Limited import surface for Pyodide spike; FMM grains gated on scikit-fmm availability
 grainTypes = {}
-grainClasses = [BatesGrain, EndBurningGrain]
+grainClasses = [BatesGrain, Finocyl, MoonBurner, XCore, CGrain, DGrain, RodTubeGrain, ConicalGrain, StarGrain, EndBurningGrain]
 for grainType in grainClasses:
     grainTypes[grainType.geomName] = grainType
-`,R=`"""BATES submodule"""
+`,_=`"""BATES submodule"""
 
 import numpy as np
 try:
@@ -723,7 +760,7 @@ except ImportError:
     skfmm = None
 import mathlib
 
-from ..grain import PerforatedGrain
+from ..grain import PerforatedGrain, _distance_map_from_core
 from .. import geometry
 from ..simResult import SimAlert, SimAlertLevel, SimAlertType
 from ..properties import FloatProperty
@@ -783,10 +820,7 @@ class BatesGrain(PerforatedGrain):
         contourLengths = {}
 
         try:
-            if skfmm is None:
-                raise ImportError("scikit-fmm is required for regression contours")
-            cellSize = 1 / mapDim
-            regressionMap = skfmm.distance(masked, dx=cellSize) * 2
+            regressionMap = _distance_map_from_core(masked, np.zeros_like(masked, dtype=bool), mapDim)
             regmax = np.amax(regressionMap)
             regressionMap = regressionMap[:, :].copy()
             if coreBlack:
@@ -804,7 +838,7 @@ class BatesGrain(PerforatedGrain):
             print(exc)
 
         return (masked, regressionMap, contours, contourLengths)
-`,_=`"""C Grain submodule"""
+`,R=`"""C Grain submodule"""
 
 import numpy as np
 
@@ -1125,7 +1159,7 @@ class DGrain(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.ERROR, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,D=`"""End Burner submodule"""
+`,T=`"""End Burner submodule"""
 
 from ..grain import Grain
 from ..import geometry
@@ -1157,7 +1191,7 @@ class EndBurningGrain(Grain):
 
     def getEndPositions(self, regDist):
         return (0, self.props['length'].getValue() - regDist)
-`,T=`"""Finocyl grain submodule"""
+`,D=`"""Finocyl grain submodule"""
 
 import numpy as np
 
@@ -1303,7 +1337,7 @@ except ImportError:
     skfmm = None
 import mathlib
 
-from ..grain import PerforatedGrain
+from ..grain import PerforatedGrain, _distance_map_from_core
 from .. import geometry
 from ..simResult import SimAlert, SimAlertLevel, SimAlertType
 from ..properties import FloatProperty
@@ -1400,7 +1434,7 @@ class RodTubeGrain(PerforatedGrain):
             cellSize = 1 / mapDim
             if skfmm is None:
                 raise ImportError("scikit-fmm is required for regression contours")
-            regressionMap = skfmm.distance(masked, dx=cellSize) * 2
+            regressionMap = _distance_map_from_core(masked, np.zeros_like(masked, dtype=bool), mapDim)
             regmax = np.amax(regressionMap)
             regressionMap = regressionMap[:, :].copy()
             if coreBlack:
@@ -1694,12 +1728,16 @@ class Motor:
             return 1.0
 
         x0 = np.arcsin(massFlux / maxMassFlux) * 2 / np.pi
-        M = newton(
-            machFunc,
-            fprime=machFuncDerivative,
-            x0=x0,
-            args=(chamberPres, massFlux, gamma, T, molarMass, gasConstant),
-        )
+        try:
+            M = newton(
+                machFunc,
+                fprime=machFuncDerivative,
+                x0=x0,
+                args=(chamberPres, massFlux, gamma, T, molarMass, gasConstant),
+                maxiter=50,
+            )
+        except Exception:
+            return 1.0
 
         return max(M, 0)
 
@@ -2254,7 +2292,7 @@ class Propellant(PropertyCollection):
     def addTab(self, tab):
         """Adds a set of combustion properties to the propellant"""
         self.props['tabs'].addTab(tab)
-`,E=`"""This module includes a properties, which are objects that contain different datatypes and enforce conditions on
+`,C=`"""This module includes a properties, which are objects that contain different datatypes and enforce conditions on
 them, such as allowed ranges. They also can optionally associate a unit with the value, which aids with display and
 conversion of the value."""
 
@@ -2402,7 +2440,7 @@ class PropertyCollection:
     def setProperty(self, prop, value):
         """Set the value of a specific property"""
         self.props[prop].setValue(value)
-`,L=`"""This module contains the classes that are returned from a simulation, including the main results class and
+`,E=`"""This module contains the classes that are returned from a simulation, including the main results class and
 the channels and components that it is comprised of."""
 
 from typing import List
@@ -2806,7 +2844,7 @@ class SimulationResult:
             out += "\\n"
 
         return out
-`,C=`"""This module contains tables of units and their long form names, their conversion rates with other units, and
+`,L=`"""This module contains tables of units and their long form names, their conversion rates with other units, and
 functions for performing conversion."""
 
 # The keys in this dictionary specify the units that all calculations are done in internally
@@ -2913,10 +2951,10 @@ def convFormat(quantity, originUnit, destUnit, places=3):
     includes the unit appended to the end."""
     rounded = round(convert(quantity, originUnit, destUnit), places)
     return '{} {}'.format(rounded, destUnit)
-`,l=document.getElementById("run"),a=document.getElementById("status"),m=document.getElementById("output"),k=Object.assign({"./src/openmotor_py/mathlib/__init__.py":u,"./src/openmotor_py/mathlib/_find_perimeter.py":d,"./src/openmotor_py/motorlib/__init__.py":g,"./src/openmotor_py/motorlib/constants.py":c,"./src/openmotor_py/motorlib/geometry.py":h,"./src/openmotor_py/motorlib/grain.py":b,"./src/openmotor_py/motorlib/grains/__init__.py":y,"./src/openmotor_py/motorlib/grains/bates.py":R,"./src/openmotor_py/motorlib/grains/cGrain.py":_,"./src/openmotor_py/motorlib/grains/conical.py":A,"./src/openmotor_py/motorlib/grains/custom.py":P,"./src/openmotor_py/motorlib/grains/dGrain.py":v,"./src/openmotor_py/motorlib/grains/endBurner.py":D,"./src/openmotor_py/motorlib/grains/finocyl.py":T,"./src/openmotor_py/motorlib/grains/moonBurner.py":x,"./src/openmotor_py/motorlib/grains/rodTube.py":S,"./src/openmotor_py/motorlib/grains/star.py":w,"./src/openmotor_py/motorlib/grains/xCore.py":F,"./src/openmotor_py/motorlib/motor.py":M,"./src/openmotor_py/motorlib/nozzle.py":N,"./src/openmotor_py/motorlib/propellant.py":V,"./src/openmotor_py/motorlib/properties.py":E,"./src/openmotor_py/motorlib/simResult.py":L,"./src/openmotor_py/motorlib/units.py":C});let p;async function G(){return p||(p=(async()=>{const n=await f();await n.loadPackage(["numpy","scipy"]);for(const[r,s]of Object.entries(k)){const e=`/openmotor_py/${r.replace("./src/openmotor_py/","")}`,t=e.substring(0,e.lastIndexOf("/"));n.FS.mkdirTree(t),n.FS.writeFile(e,s)}return await n.runPythonAsync(`
+`,l=document.getElementById("run"),a=document.getElementById("status"),m=document.getElementById("output"),G=Object.assign({"./src/openmotor_py/mathlib/__init__.py":u,"./src/openmotor_py/mathlib/_find_perimeter.py":d,"./src/openmotor_py/motorlib/__init__.py":g,"./src/openmotor_py/motorlib/constants.py":c,"./src/openmotor_py/motorlib/geometry.py":h,"./src/openmotor_py/motorlib/grain.py":b,"./src/openmotor_py/motorlib/grains/__init__.py":y,"./src/openmotor_py/motorlib/grains/bates.py":_,"./src/openmotor_py/motorlib/grains/cGrain.py":R,"./src/openmotor_py/motorlib/grains/conical.py":A,"./src/openmotor_py/motorlib/grains/custom.py":P,"./src/openmotor_py/motorlib/grains/dGrain.py":v,"./src/openmotor_py/motorlib/grains/endBurner.py":T,"./src/openmotor_py/motorlib/grains/finocyl.py":D,"./src/openmotor_py/motorlib/grains/moonBurner.py":x,"./src/openmotor_py/motorlib/grains/rodTube.py":S,"./src/openmotor_py/motorlib/grains/star.py":w,"./src/openmotor_py/motorlib/grains/xCore.py":F,"./src/openmotor_py/motorlib/motor.py":M,"./src/openmotor_py/motorlib/nozzle.py":N,"./src/openmotor_py/motorlib/propellant.py":V,"./src/openmotor_py/motorlib/properties.py":C,"./src/openmotor_py/motorlib/simResult.py":E,"./src/openmotor_py/motorlib/units.py":L});let p;async function k(){return p||(p=(async()=>{const n=await f();await n.loadPackage(["numpy","scipy"]);for(const[r,s]of Object.entries(G)){const e=`/openmotor_py/${r.replace("./src/openmotor_py/","")}`,t=e.substring(0,e.lastIndexOf("/"));n.FS.mkdirTree(t),n.FS.writeFile(e,s)}return await n.runPythonAsync(`
 import sys
 sys.path.insert(0, '/openmotor_py')
-`),n})()),p}const I=`
+`),n})()),p}const z=`
 import json
 import traceback
 
@@ -2982,10 +3020,26 @@ try:
         'designation': sim.getDesignation() if sim.channels['force'].data else None,
         'samples': len(sim.channels['time'].data),
     }
+
+    sg = motorlib.grains.StarGrain()
+    sg.setProperties({
+        'diameter': 0.05,
+        'length': 0.1,
+        'numPoints': 6,
+        'pointLength': 0.015,
+        'pointWidth': 0.01,
+        'inhibitedEnds': 'Both'
+    })
+    sg.simulationSetup(tc)
+    result['fmm_probe'] = {
+        'wallWeb': sg.wallWeb,
+        'faceArea0': float(sg.getFaceArea(0)),
+        'perimeter0': float(sg.getCorePerimeter(0)),
+    }
 except Exception as exc:
     result = {
         'error': str(exc),
         'traceback': traceback.format_exc(),
     }
 json.dumps(result)
-`;l.addEventListener("click",async()=>{l.disabled=!0,m.textContent="",a.textContent="Loading Pyodide and Python deps...";try{const n=await G();a.textContent="Running simulation...";const r=await n.runPythonAsync(I),s=JSON.parse(r);m.textContent=JSON.stringify(s,null,2),a.innerHTML=s.error?'<span class="err">Simulation failed.</span>':'<span class="ok">Simulation ran.</span>'}catch(n){m.textContent=String((n==null?void 0:n.stack)||n),a.innerHTML='<span class="err">Pyodide bootstrap failed.</span>'}finally{l.disabled=!1}});
+`;l.addEventListener("click",async()=>{l.disabled=!0,m.textContent="",a.textContent="Loading Pyodide and Python deps...";try{const n=await k();a.textContent="Running simulation...";const r=await n.runPythonAsync(z),s=JSON.parse(r);m.textContent=JSON.stringify(s,null,2),a.innerHTML=s.error?'<span class="err">Simulation failed.</span>':'<span class="ok">Simulation ran.</span>'}catch(n){m.textContent=String((n==null?void 0:n.stack)||n),a.innerHTML='<span class="err">Pyodide bootstrap failed.</span>'}finally{l.disabled=!1}});
