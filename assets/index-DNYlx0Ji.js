@@ -1,4 +1,4 @@
-import{loadPyodide as M}from"https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs";(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const l of i.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&a(l)}).observe(document,{childList:!0,subtree:!0});function s(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=s(r);fetch(r.href,i)}})();const S={nozzle:{throat:.01428,exit:.02,efficiency:.95,divAngle:15,convAngle:45,throatLength:.005,slagCoeff:0,erosionCoeff:0},propellant:{name:"KNSU",density:1890,tabs:[{minPressure:0,maxPressure:6895e3,a:101e-6,n:.319,t:1720,m:41.98,k:1.133}]},grains:[{type:"BATES",properties:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"}}],config:{maxPressure:7e7,maxMassFlux:1e4,maxMachNumber:100,minPortThroat:1,flowSeparationWarnPercent:.01,burnoutWebThres:254e-7,burnoutThrustThres:.01,timestep:1e-4,ambPressure:101325,mapDim:401,sepPressureRatio:.4}},w={BATES:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"},"Star Grain":{diameter:.05,length:.1,numPoints:6,pointLength:.015,pointWidth:.01,inhibitedEnds:"Both"},Finocyl:{diameter:.06,length:.12,numFins:6,finWidth:.006,finLength:.012,coreDiameter:.02,invertedFins:!1,inhibitedEnds:"Both"},"Moon Burner":{diameter:.06,length:.12,coreDiameter:.02,coreOffset:.008,inhibitedEnds:"Both"},"X Core":{diameter:.06,length:.12,slotWidth:.008,slotLength:.015,inhibitedEnds:"Both"},"D Grain":{diameter:.06,length:.12,slotOffset:0,inhibitedEnds:"Both"},"C Grain":{diameter:.06,length:.12,slotWidth:.01,slotOffset:0,inhibitedEnds:"Both"},Conical:{diameter:.06,length:.12,forwardCoreDiameter:.015,aftCoreDiameter:.025,inhibitedEnds:"Neither"},"End Burner":{diameter:.06,length:.12}},N="from ._find_perimeter import find_perimeter",E=`import numpy as np
+import{loadPyodide as M}from"https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs";(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const l of i.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&a(l)}).observe(document,{childList:!0,subtree:!0});function s(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=s(r);fetch(r.href,i)}})();const w={nozzle:{throat:.01428,exit:.02,efficiency:.95,divAngle:15,convAngle:45,throatLength:.005,slagCoeff:0,erosionCoeff:0},propellant:{name:"KNSU",density:1890,tabs:[{minPressure:0,maxPressure:6895e3,a:101e-6,n:.319,t:1720,m:41.98,k:1.133}]},grains:[{type:"BATES",properties:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"}}],config:{maxPressure:7e7,maxMassFlux:1e4,maxMachNumber:100,minPortThroat:1,flowSeparationWarnPercent:.01,burnoutWebThres:254e-7,burnoutThrustThres:.01,timestep:1e-4,ambPressure:101325,mapDim:401,sepPressureRatio:.4}},S={BATES:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"},"Star Grain":{diameter:.05,length:.1,numPoints:6,pointLength:.015,pointWidth:.01,inhibitedEnds:"Both"},Finocyl:{diameter:.06,length:.12,numFins:6,finWidth:.006,finLength:.012,coreDiameter:.02,invertedFins:!1,inhibitedEnds:"Both"},"Moon Burner":{diameter:.06,length:.12,coreDiameter:.02,coreOffset:.008,inhibitedEnds:"Both"},"X Core":{diameter:.06,length:.12,slotWidth:.008,slotLength:.015,inhibitedEnds:"Both"},"D Grain":{diameter:.06,length:.12,slotOffset:0,inhibitedEnds:"Both"},"C Grain":{diameter:.06,length:.12,slotWidth:.01,slotOffset:0,inhibitedEnds:"Both"},Conical:{diameter:.06,length:.12,forwardCoreDiameter:.015,aftCoreDiameter:.025,inhibitedEnds:"Neither"},"End Burner":{diameter:.06,length:.12}},N="from ._find_perimeter import find_perimeter",E=`import numpy as np
 from collections import deque
 
 
@@ -1289,7 +1289,7 @@ class Finocyl(FmmGrain):
                 errors.append(SimAlert(level, SimAlertType.GEOMETRY, 'Fin tips intersect'))
 
         return errors
-`,Y=`"""Moon burning grain submodule"""
+`,$=`"""Moon burning grain submodule"""
 
 from ..grain import FmmGrain
 from ..properties import FloatProperty
@@ -1328,7 +1328,7 @@ class MoonBurner(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.WARNING, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,$=`"""Rod and Tube submodule"""
+`,Y=`"""Rod and Tube submodule"""
 
 import numpy as np
 try:
@@ -2951,8 +2951,8 @@ def convFormat(quantity, originUnit, destUnit, places=3):
     includes the unit appended to the end."""
     rounded = round(convert(quantity, originUnit, destUnit), places)
     return '{} {}'.format(rounded, destUnit)
-`,ne=Object.assign({"../openmotor_py/mathlib/__init__.py":N,"../openmotor_py/mathlib/_find_perimeter.py":E,"../openmotor_py/motorlib/__init__.py":V,"../openmotor_py/motorlib/constants.py":C,"../openmotor_py/motorlib/geometry.py":L,"../openmotor_py/motorlib/grain.py":k,"../openmotor_py/motorlib/grains/__init__.py":G,"../openmotor_py/motorlib/grains/bates.py":I,"../openmotor_py/motorlib/grains/cGrain.py":z,"../openmotor_py/motorlib/grains/conical.py":O,"../openmotor_py/motorlib/grains/custom.py":B,"../openmotor_py/motorlib/grains/dGrain.py":U,"../openmotor_py/motorlib/grains/endBurner.py":W,"../openmotor_py/motorlib/grains/finocyl.py":j,"../openmotor_py/motorlib/grains/moonBurner.py":Y,"../openmotor_py/motorlib/grains/rodTube.py":$,"../openmotor_py/motorlib/grains/star.py":q,"../openmotor_py/motorlib/grains/xCore.py":X,"../openmotor_py/motorlib/motor.py":K,"../openmotor_py/motorlib/nozzle.py":H,"../openmotor_py/motorlib/propellant.py":J,"../openmotor_py/motorlib/properties.py":Q,"../openmotor_py/motorlib/simResult.py":Z,"../openmotor_py/motorlib/units.py":ee});let P;async function F(){return P||(P=(async()=>{const n=await M();await n.loadPackage(["numpy","scipy"]);for(const[t,s]of Object.entries(ne)){const r=`/openmotor_py/${t.replace("../openmotor_py/","")}`;n.FS.mkdirTree(r.substring(0,r.lastIndexOf("/"))),n.FS.writeFile(r,s)}return await n.runPythonAsync(`import sys
-sys.path.insert(0, '/openmotor_py')`),n})()),P}async function D(n,t={}){const s=await F();for(const[r,i]of Object.entries(t))s.globals.set(r,typeof i=="string"?i:JSON.stringify(i));const a=await s.runPythonAsync(n);return JSON.parse(a)}function te(n){return D(`
+`,ne=Object.assign({"../openmotor_py/mathlib/__init__.py":N,"../openmotor_py/mathlib/_find_perimeter.py":E,"../openmotor_py/motorlib/__init__.py":V,"../openmotor_py/motorlib/constants.py":C,"../openmotor_py/motorlib/geometry.py":L,"../openmotor_py/motorlib/grain.py":k,"../openmotor_py/motorlib/grains/__init__.py":G,"../openmotor_py/motorlib/grains/bates.py":I,"../openmotor_py/motorlib/grains/cGrain.py":z,"../openmotor_py/motorlib/grains/conical.py":O,"../openmotor_py/motorlib/grains/custom.py":B,"../openmotor_py/motorlib/grains/dGrain.py":U,"../openmotor_py/motorlib/grains/endBurner.py":W,"../openmotor_py/motorlib/grains/finocyl.py":j,"../openmotor_py/motorlib/grains/moonBurner.py":$,"../openmotor_py/motorlib/grains/rodTube.py":Y,"../openmotor_py/motorlib/grains/star.py":q,"../openmotor_py/motorlib/grains/xCore.py":X,"../openmotor_py/motorlib/motor.py":K,"../openmotor_py/motorlib/nozzle.py":H,"../openmotor_py/motorlib/propellant.py":J,"../openmotor_py/motorlib/properties.py":Q,"../openmotor_py/motorlib/simResult.py":Z,"../openmotor_py/motorlib/units.py":ee});let T;async function F(){return T||(T=(async()=>{const n=await M();await n.loadPackage(["numpy","scipy"]);for(const[t,s]of Object.entries(ne)){const r=`/openmotor_py/${t.replace("../openmotor_py/","")}`;n.FS.mkdirTree(r.substring(0,r.lastIndexOf("/"))),n.FS.writeFile(r,s)}return await n.runPythonAsync(`import sys
+sys.path.insert(0, '/openmotor_py')`),n})()),T}async function A(n,t={}){const s=await F();for(const[r,i]of Object.entries(t))s.globals.set(r,typeof i=="string"?i:JSON.stringify(i));const a=await s.runPythonAsync(n);return JSON.parse(a)}function te(n){return A(`
 import json, traceback
 result = {}
 try:
@@ -2988,7 +2988,7 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{motor_input_json:n})}function re(n){return D(`
+`,{motor_input_json:n})}function re(n){return A(`
 import json, traceback
 result = {}
 try:
@@ -2997,7 +2997,7 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{motor_input_json:n})}function se(n){return D(`
+`,{motor_input_json:n})}function se(n){return A(`
 import json, traceback
 result = {}
 try:
@@ -3007,79 +3007,56 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{input_yaml:n})}const e={motor:structuredClone(S),selectedGrain:0,result:null,status:"Booting…",running:!1,fileName:"untitled.ric"},ae=document.getElementById("app"),ie=["Neither","Top","Bottom","Both"];function oe(n){return Number.isFinite(n)?n:0}function p(n,t=3){return n==null?"—":Number(n).toFixed(t)}function A(n){return n.replace(/([A-Z])/g," $1").replace(/^./,t=>t.toUpperCase())}function le(n){return Object.entries(n.properties).map(([t,s])=>typeof s=="boolean"?`<label class="field"><span>${A(t)}</span><input data-scope="grain" data-key="${t}" type="checkbox" ${s?"checked":""}></label>`:t==="inhibitedEnds"?`<label class="field"><span>${A(t)}</span><select data-scope="grain" data-key="${t}">${ie.map(a=>`<option ${a===s?"selected":""}>${a}</option>`).join("")}</select></label>`:`<label class="field"><span>${A(t)}</span><input data-scope="grain" data-key="${t}" type="number" step="any" value="${s}"></label>`).join("")}function v(n,t,s=[]){return Object.entries(n).map(([a,r])=>{if(Array.isArray(r)||typeof r=="object")return"";const i=s.includes(a)||typeof r=="string"?"text":"number",l=i==="number"?'step="any"':"";return`<label class="field"><span>${A(a)}</span><input data-scope="${t}" data-key="${a}" type="${i}" ${l} value="${r}"></label>`}).join("")}function o(){var s,a,r,i,l,f,g,u,c,h,b,y,_,R,x;const n=e.motor.grains[e.selectedGrain],t=((s=e.result)==null?void 0:s.stats)||{};ae.innerHTML=`
+`,{input_yaml:n})}function ae(n,t){return A(`
+import json, traceback
+result = {}
+try:
+    import motorlib.motor
+    m = motorlib.motor.Motor(json.loads(motor_input_json))
+    grain_index = int(grain_index_json)
+    grain = m.grains[grain_index]
+    grain.simulationSetup(m.config)
+    masked, regression_map, contours, contour_lengths = grain.getRegressionData(m.config.getProperty('mapDim'), 12, True)
+
+    face = []
+    if masked is not None:
+        filled = masked.filled(-1).tolist() if hasattr(masked, 'filled') else masked.tolist()
+        face = filled
+
+    result = {
+        'grainType': grain.geomName,
+        'faceImage': face,
+        'contours': contours,
+        'contourLengths': {str(k): v for k, v in contour_lengths.items()},
+        'wallWeb': getattr(grain, 'wallWeb', None),
+    }
+except Exception as exc:
+    result = {'error': str(exc), 'traceback': traceback.format_exc()}
+json.dumps(result)
+`,{motor_input_json:n,grain_index_json:String(t)})}const e={motor:structuredClone(w),selectedGrain:0,result:null,grainPreview:null,status:"Booting…",running:!1,previewing:!1,fileName:"untitled.ric"},ie=document.getElementById("app"),oe=["Neither","Top","Bottom","Both"],le=n=>Number.isFinite(n)?n:0,f=(n,t=3)=>n==null?"—":Number(n).toFixed(t),P=n=>n.replace(/([A-Z])/g," $1").replace(/^./,t=>t.toUpperCase());function me(n){return Object.entries(n.properties).map(([t,s])=>typeof s=="boolean"?`<label class="field"><span>${P(t)}</span><input data-scope="grain" data-key="${t}" type="checkbox" ${s?"checked":""}></label>`:t==="inhibitedEnds"?`<label class="field"><span>${P(t)}</span><select data-scope="grain" data-key="${t}">${oe.map(a=>`<option ${a===s?"selected":""}>${a}</option>`).join("")}</select></label>`:`<label class="field"><span>${P(t)}</span><input data-scope="grain" data-key="${t}" type="number" step="any" value="${s}"></label>`).join("")}function R(n,t,s=[]){return Object.entries(n).map(([a,r])=>Array.isArray(r)||typeof r=="object"?"":`<label class="field"><span>${P(a)}</span><input data-scope="${t}" data-key="${a}" type="${s.includes(a)||typeof r=="string"?"text":"number"}" ${typeof r=="number"?'step="any"':""} value="${r}"></label>`).join("")}function pe(){var r,i,l,g;if((r=e.grainPreview)!=null&&r.error)return`<pre class="error">${e.grainPreview.error}
+
+${e.grainPreview.traceback||""}</pre>`;if(!((l=(i=e.grainPreview)==null?void 0:i.faceImage)!=null&&l.length))return'<p class="muted">No preview yet.</p>';const n=e.grainPreview.faceImage,t=n.length,s=((g=n[0])==null?void 0:g.length)||0;let a="";for(let u=0;u<t;u+=2)for(let p=0;p<s;p+=2){const c=n[u][p];let d="#0f172a";c===-1?d="#020617":c===0?d="#e2e8f0":d="#38bdf8",a+=`<rect x="${p/2}" y="${u/2}" width="1" height="1" fill="${d}" />`}return`<div class="preview-meta"><span>Type: ${e.grainPreview.grainType}</span><span>Wall web: ${f(e.grainPreview.wallWeb)}</span></div><svg viewBox="0 0 ${Math.ceil(s/2)} ${Math.ceil(t/2)}" class="grain-preview">${a}</svg>`}function o(){var s,a,r,i,l,g,u,p,c,d,b,y,_,v,x;const n=e.motor.grains[e.selectedGrain],t=((s=e.result)==null?void 0:s.stats)||{};ie.innerHTML=`
     <div class="shell">
       <header class="topbar">
-        <div>
-          <h1>openMotor Web</h1>
-          <p class="muted">${e.fileName} · ${e.status}</p>
-        </div>
-        <div class="actions row wrap">
-          <button id="new-motor">New</button>
-          <button id="open-ric">Open .ric</button>
-          <button id="save-ric">Save .ric</button>
-          <button id="run-sim" ${e.running?"disabled":""}>${e.running?"Running…":"Run simulation"}</button>
-          <input id="ric-file-input" type="file" accept=".ric,.yaml,.yml,text/yaml" hidden />
-        </div>
+        <div><h1>openMotor Web</h1><p class="muted">${e.fileName} · ${e.status}</p></div>
+        <div class="actions row wrap"><button id="new-motor">New</button><button id="open-ric">Open .ric</button><button id="save-ric">Save .ric</button><button id="preview-grain" ${e.previewing?"disabled":""}>${e.previewing?"Loading preview…":"Preview grain"}</button><button id="run-sim" ${e.running?"disabled":""}>${e.running?"Running…":"Run simulation"}</button><input id="ric-file-input" type="file" accept=".ric,.yaml,.yml,text/yaml" hidden /></div>
       </header>
-
       <div class="content">
         <aside class="sidebar">
-          <div class="panel">
-            <h2>Motor editor</h2>
-            <p class="muted">Closest-to-openMotor web workflow: configure grains, nozzle, propellant, run sim, inspect results.</p>
-          </div>
-
-          <div class="panel">
-            <h3>Grains</h3>
-            <div class="grain-list">
-              ${e.motor.grains.map((m,d)=>`<button class="grain-item ${d===e.selectedGrain?"active":""}" data-grain-index="${d}">${d+1}. ${m.type}</button>`).join("")}
-            </div>
-            <div class="row wrap">
-              <select id="add-grain-type">${Object.keys(w).map(m=>`<option>${m}</option>`).join("")}</select>
-              <button id="add-grain">Add</button>
-              <button id="dup-grain">Duplicate</button>
-              <button id="del-grain" ${e.motor.grains.length<=1?"disabled":""}>Delete</button>
-            </div>
-          </div>
-
-          <div class="panel"><h3>Selected grain</h3><div class="fields">${le(n)}</div></div>
-          <div class="panel"><h3>Nozzle</h3><div class="fields">${v(e.motor.nozzle,"nozzle")}</div></div>
-          <div class="panel"><h3>Propellant</h3><div class="fields">${v(e.motor.propellant,"propellant",["name"])}</div><h4>Burn rate tab</h4><div class="fields">${v(e.motor.propellant.tabs[0],"tab")}</div></div>
-          <div class="panel"><h3>Simulation config</h3><div class="fields">${v(e.motor.config,"config")}</div></div>
+          <div class="panel"><h2>Motor editor</h2><p class="muted">Configure grains, nozzle, propellant, and simulation settings.</p></div>
+          <div class="panel"><h3>Grains</h3><div class="grain-list">${e.motor.grains.map((m,h)=>`<button class="grain-item ${h===e.selectedGrain?"active":""}" data-grain-index="${h}">${h+1}. ${m.type}</button>`).join("")}</div><div class="row wrap"><select id="add-grain-type">${Object.keys(S).map(m=>`<option>${m}</option>`).join("")}</select><button id="add-grain">Add</button><button id="dup-grain">Duplicate</button><button id="del-grain" ${e.motor.grains.length<=1?"disabled":""}>Delete</button></div></div>
+          <div class="panel"><h3>Selected grain</h3><div class="fields">${me(n)}</div></div>
+          <div class="panel"><h3>Nozzle</h3><div class="fields">${R(e.motor.nozzle,"nozzle")}</div></div>
+          <div class="panel"><h3>Propellant</h3><div class="fields">${R(e.motor.propellant,"propellant",["name"])}</div><h4>Burn rate tab</h4><div class="fields">${R(e.motor.propellant.tabs[0],"tab")}</div></div>
+          <div class="panel"><h3>Simulation config</h3><div class="fields">${R(e.motor.config,"config")}</div></div>
         </aside>
-
         <main class="main">
-          <section class="panel hero">
-            <h2>Results</h2>
-            <p class="muted">This layout is aiming toward desktop openMotor: quick stats up top, alerts/results/charts below.</p>
-          </section>
+          <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, plots.</p></section>
+          <section class="stats-grid">${[["Designation",t.designation],["Impulse (Ns)",f(t.impulse)],["ISP (s)",f(t.isp)],["Burn time (s)",f(t.burnTime)],["Volume loading (%)",f(t.volumeLoading)],["Avg pressure (Pa)",f(t.avgPressure,0)],["Peak pressure (Pa)",f(t.peakPressure,0)],["Initial Kn",f(t.initialKn)],["Peak Kn",f(t.peakKn)],["Propellant mass (kg)",f(t.propellantMass)]].map(([m,h])=>`<div class="stat"><span>${m}</span><strong>${h??"—"}</strong></div>`).join("")}</section>
+          <section class="panel results-layout"><div><h3>Alerts</h3>${(a=e.result)!=null&&a.error?`<pre class="error">${e.result.error}
 
-          <section class="stats-grid">
-            ${[["Designation",t.designation],["Impulse (Ns)",p(t.impulse)],["ISP (s)",p(t.isp)],["Burn time (s)",p(t.burnTime)],["Volume loading (%)",p(t.volumeLoading)],["Avg pressure (Pa)",p(t.avgPressure,0)],["Peak pressure (Pa)",p(t.peakPressure,0)],["Initial Kn",p(t.initialKn)],["Peak Kn",p(t.peakKn)],["Propellant mass (kg)",p(t.propellantMass)]].map(([m,d])=>`<div class="stat"><span>${m}</span><strong>${d??"—"}</strong></div>`).join("")}
-          </section>
-
-          <section class="panel results-layout">
-            <div>
-              <h3>Alerts</h3>
-              ${(a=e.result)!=null&&a.error?`<pre class="error">${e.result.error}
-
-${e.result.traceback||""}</pre>`:""}
-              <ul class="alerts">${(((r=e.result)==null?void 0:r.alerts)||[]).map(m=>`<li><strong>${m.level}</strong> ${m.type}: ${m.description}${m.location?` <span class="muted">(${m.location})</span>`:""}</li>`).join("")||'<li class="muted">No alerts</li>'}</ul>
-            </div>
-            <div>
-              <h3>Motor snapshot</h3>
-              <pre class="json-preview">${JSON.stringify(e.motor,null,2)}</pre>
-            </div>
-          </section>
-
-          <section class="panel">
-            <h3>Plots</h3>
-            ${T("force","Force",(l=(i=e.result)==null?void 0:i.channels)==null?void 0:l.time,(g=(f=e.result)==null?void 0:f.channels)==null?void 0:g.force)}
-            ${T("pressure","Pressure",(c=(u=e.result)==null?void 0:u.channels)==null?void 0:c.time,(b=(h=e.result)==null?void 0:h.channels)==null?void 0:b.pressure)}
-            ${T("kn","Kn",(_=(y=e.result)==null?void 0:y.channels)==null?void 0:_.time,(x=(R=e.result)==null?void 0:R.channels)==null?void 0:x.kn)}
-          </section>
+${e.result.traceback||""}</pre>`:""}<ul class="alerts">${(((r=e.result)==null?void 0:r.alerts)||[]).map(m=>`<li><strong>${m.level}</strong> ${m.type}: ${m.description}${m.location?` <span class="muted">(${m.location})</span>`:""}</li>`).join("")||'<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain preview</h3>${pe()}</div></section>
+          <section class="panel"><h3>Plots</h3>${D("force","Force",(l=(i=e.result)==null?void 0:i.channels)==null?void 0:l.time,(u=(g=e.result)==null?void 0:g.channels)==null?void 0:u.force)}${D("pressure","Pressure",(c=(p=e.result)==null?void 0:p.channels)==null?void 0:c.time,(b=(d=e.result)==null?void 0:d.channels)==null?void 0:b.pressure)}${D("kn","Kn",(_=(y=e.result)==null?void 0:y.channels)==null?void 0:_.time,(x=(v=e.result)==null?void 0:v.channels)==null?void 0:x.kn)}</section>
         </main>
       </div>
-    </div>
-  `,fe()}function T(n,t,s,a){if(!s||!a||!s.length||!a.length)return`<div class="chart-wrap"><h4>${t}</h4><p class="muted">No data yet.</p></div>`;const r=900,i=220,l=28,f=Math.min(...s),g=Math.max(...s),u=Math.min(...a),c=Math.max(...a),h=g-f||1,b=c-u||1,y=s.map((_,R)=>`${l+(_-f)/h*(r-l*2)},${i-l-(a[R]-u)/b*(i-l*2)}`).join(" ");return`<div class="chart-wrap"><h4>${t}</h4><svg viewBox="0 0 ${r} ${i}" class="chart"><polyline fill="none" stroke="#60a5fa" stroke-width="2" points="${y}" /></svg></div>`}async function me(){e.status="Exporting .ric…",o();const n=await re(e.motor);if(n.error){e.result=n,e.status="Export failed.",o();return}const t=new Blob([n.yaml],{type:"application/x-yaml"}),s=URL.createObjectURL(t),a=document.createElement("a");a.href=s,a.download=e.fileName||"motor.ric",a.click(),URL.revokeObjectURL(s),e.status="Saved .ric file.",o()}async function pe(n){const t=await n.text();e.status="Importing .ric…",o();const s=await se(t);s.error?(e.result=s,e.status="Import failed."):(e.motor=s.motor,e.fileName=n.name||"imported.ric",e.selectedGrain=0,e.result=null,e.status="Imported .ric file."),o()}function fe(){document.querySelectorAll("[data-grain-index]").forEach(n=>n.onclick=()=>{e.selectedGrain=Number(n.dataset.grainIndex),o()}),document.getElementById("new-motor").onclick=()=>{e.motor=structuredClone(S),e.selectedGrain=0,e.result=null,e.fileName="untitled.ric",e.status="Reset.",o()},document.getElementById("open-ric").onclick=()=>document.getElementById("ric-file-input").click(),document.getElementById("ric-file-input").onchange=async n=>{var s;const t=(s=n.target.files)==null?void 0:s[0];t&&await pe(t),n.target.value=""},document.getElementById("save-ric").onclick=me,document.getElementById("add-grain").onclick=()=>{const n=document.getElementById("add-grain-type").value;e.motor.grains.push({type:n,properties:structuredClone(w[n])}),e.selectedGrain=e.motor.grains.length-1,o()},document.getElementById("dup-grain").onclick=()=>{const n=e.motor.grains[e.selectedGrain];e.motor.grains.splice(e.selectedGrain+1,0,structuredClone(n)),e.selectedGrain++,o()},document.getElementById("del-grain").onclick=()=>{e.motor.grains.splice(e.selectedGrain,1),e.selectedGrain=Math.max(0,e.selectedGrain-1),o()},document.getElementById("run-sim").onclick=async()=>{e.running=!0,e.status="Running simulation in Pyodide…",o();try{e.result=await te(e.motor),e.status=e.result.error?"Simulation failed.":"Simulation complete."}catch(n){e.result={error:String((n==null?void 0:n.stack)||n)},e.status="Simulation bootstrap failed."}finally{e.running=!1,o()}},document.querySelectorAll("input[data-scope], select[data-scope]").forEach(n=>{n.onchange=t=>{const{scope:s,key:a}=t.target.dataset;let r;t.target.type==="checkbox"?r=t.target.checked:t.target.type==="number"?r=oe(parseFloat(t.target.value)):r=t.target.value,s==="grain"?e.motor.grains[e.selectedGrain].properties[a]=r:s==="nozzle"?e.motor.nozzle[a]=r:s==="propellant"?e.motor.propellant[a]=r:s==="tab"?e.motor.propellant.tabs[0][a]=r:s==="config"&&(e.motor.config[a]=r)}})}async function ue(){o();try{await F(),e.status="Pyodide ready."}catch{e.status="Pyodide failed to load."}o()}ue();
+    </div>`,ge()}function D(n,t,s,a){if(!s||!a||!s.length||!a.length)return`<div class="chart-wrap"><h4>${t}</h4><p class="muted">No data yet.</p></div>`;const r=900,i=220,l=28,g=Math.min(...s),u=Math.max(...s),p=Math.min(...a),c=Math.max(...a),d=u-g||1,b=c-p||1,y=s.map((_,v)=>`${l+(_-g)/d*(r-l*2)},${i-l-(a[v]-p)/b*(i-l*2)}`).join(" ");return`<div class="chart-wrap"><h4>${t}</h4><svg viewBox="0 0 ${r} ${i}" class="chart"><polyline fill="none" stroke="#60a5fa" stroke-width="2" points="${y}" /></svg></div>`}async function fe(){e.status="Exporting .ric…",o();const n=await re(e.motor);if(n.error){e.result=n,e.status="Export failed.",o();return}const t=new Blob([n.yaml],{type:"application/x-yaml"}),s=URL.createObjectURL(t),a=document.createElement("a");a.href=s,a.download=e.fileName||"motor.ric",a.click(),URL.revokeObjectURL(s),e.status="Saved .ric file.",o()}async function ue(n){const t=await n.text();e.status="Importing .ric…",o();const s=await se(t);s.error?(e.result=s,e.status="Import failed."):(e.motor=s.motor,e.fileName=n.name||"imported.ric",e.selectedGrain=0,e.result=null,e.grainPreview=null,e.status="Imported .ric file."),o()}async function de(){e.previewing=!0,e.status="Generating grain preview…",o();try{e.grainPreview=await ae(e.motor,e.selectedGrain),e.status=e.grainPreview.error?"Preview failed.":"Preview ready."}catch(n){e.grainPreview={error:String((n==null?void 0:n.stack)||n)},e.status="Preview failed."}finally{e.previewing=!1,o()}}function ge(){document.querySelectorAll("[data-grain-index]").forEach(n=>n.onclick=()=>{e.selectedGrain=Number(n.dataset.grainIndex),e.grainPreview=null,o()}),document.getElementById("new-motor").onclick=()=>{e.motor=structuredClone(w),e.selectedGrain=0,e.result=null,e.grainPreview=null,e.fileName="untitled.ric",e.status="Reset.",o()},document.getElementById("open-ric").onclick=()=>document.getElementById("ric-file-input").click(),document.getElementById("ric-file-input").onchange=async n=>{var s;const t=(s=n.target.files)==null?void 0:s[0];t&&await ue(t),n.target.value=""},document.getElementById("save-ric").onclick=fe,document.getElementById("preview-grain").onclick=de,document.getElementById("add-grain").onclick=()=>{const n=document.getElementById("add-grain-type").value;e.motor.grains.push({type:n,properties:structuredClone(S[n])}),e.selectedGrain=e.motor.grains.length-1,e.grainPreview=null,o()},document.getElementById("dup-grain").onclick=()=>{const n=e.motor.grains[e.selectedGrain];e.motor.grains.splice(e.selectedGrain+1,0,structuredClone(n)),e.selectedGrain++,e.grainPreview=null,o()},document.getElementById("del-grain").onclick=()=>{e.motor.grains.splice(e.selectedGrain,1),e.selectedGrain=Math.max(0,e.selectedGrain-1),e.grainPreview=null,o()},document.getElementById("run-sim").onclick=async()=>{e.running=!0,e.status="Running simulation in Pyodide…",o();try{e.result=await te(e.motor),e.status=e.result.error?"Simulation failed.":"Simulation complete."}catch(n){e.result={error:String((n==null?void 0:n.stack)||n)},e.status="Simulation bootstrap failed."}finally{e.running=!1,o()}},document.querySelectorAll("input[data-scope], select[data-scope]").forEach(n=>{n.onchange=t=>{const{scope:s,key:a}=t.target.dataset;let r;t.target.type==="checkbox"?r=t.target.checked:t.target.type==="number"?r=le(parseFloat(t.target.value)):r=t.target.value,s==="grain"?e.motor.grains[e.selectedGrain].properties[a]=r:s==="nozzle"?e.motor.nozzle[a]=r:s==="propellant"?e.motor.propellant[a]=r:s==="tab"?e.motor.propellant.tabs[0][a]=r:s==="config"&&(e.motor.config[a]=r),e.grainPreview=null}})}async function ce(){o();try{await F(),e.status="Pyodide ready."}catch{e.status="Pyodide failed to load."}o()}ce();
