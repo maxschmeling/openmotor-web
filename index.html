@@ -1,36 +1,42 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>openMotor Web</title>
-    <style>
-      :root { color-scheme: dark; }
-      body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; background: #111827; color: #e5e7eb; }
-      main { max-width: 920px; margin: 0 auto; padding: 32px 20px 64px; }
-      h1 { margin-top: 0; }
-      button { background: #2563eb; color: white; border: 0; padding: 10px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-      button:disabled { opacity: .6; cursor: wait; }
-      .card { background: #1f2937; border: 1px solid #374151; border-radius: 12px; padding: 16px; margin: 16px 0; }
-      pre { white-space: pre-wrap; word-break: break-word; background: #0b1220; padding: 12px; border-radius: 8px; overflow: auto; }
-      .ok { color: #86efac; }
-      .warn { color: #fbbf24; }
-      .err { color: #fca5a5; }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>openMotor Web</h1>
-      <p>Pyodide viability spike. Goal: prove reused simulation code can run entirely in the browser.</p>
-      <div class="card">
-        <button id="run">Run Pyodide simulation smoke test</button>
-        <p id="status">Idle.</p>
-      </div>
-      <div class="card">
-        <h2>Output</h2>
-        <pre id="output"></pre>
-      </div>
-    </main>
-    <script type="module" src="/main.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>openMotor Web</title>
+  <style>
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; background: #0b1220; color: #e5e7eb; }
+    button, select, input { font: inherit; }
+    button { background: #2563eb; color: #fff; border: 0; border-radius: 8px; padding: 10px 12px; cursor: pointer; }
+    button:disabled { opacity: .5; cursor: not-allowed; }
+    input, select { width: 100%; padding: 8px 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: #e5e7eb; }
+    .shell { display: grid; grid-template-columns: 420px 1fr; min-height: 100vh; }
+    .sidebar { padding: 16px; background: #0f172a; border-right: 1px solid #1e293b; overflow: auto; }
+    .main { padding: 20px; overflow: auto; }
+    .panel { background: #111827; border: 1px solid #1f2937; border-radius: 14px; padding: 16px; margin-bottom: 16px; }
+    .hero h1, .panel h2, .panel h3, .panel h4 { margin-top: 0; }
+    .muted { color: #94a3b8; }
+    .row { display: flex; gap: 8px; margin-top: 10px; }
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+    .grain-list { display: flex; flex-direction: column; gap: 8px; }
+    .grain-item { text-align: left; background: #1e293b; }
+    .grain-item.active { background: #2563eb; }
+    .stats-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+    .stat { background: #111827; border: 1px solid #1f2937; border-radius: 12px; padding: 14px; display: flex; flex-direction: column; gap: 6px; }
+    .stat span { color: #94a3b8; font-size: 12px; }
+    .stat strong { font-size: 18px; }
+    .alerts { margin: 0; padding-left: 18px; }
+    .chart-wrap { margin-bottom: 18px; }
+    .chart { width: 100%; height: auto; background: #020617; border-radius: 10px; border: 1px solid #1e293b; }
+    .error { white-space: pre-wrap; background: #220a0a; color: #fecaca; border-radius: 10px; padding: 12px; overflow: auto; }
+    @media (max-width: 1100px) { .shell { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .fields { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script type="module" src="/main.js"></script>
+</body>
 </html>

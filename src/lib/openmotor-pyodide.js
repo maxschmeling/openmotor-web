@@ -1,0 +1,62 @@
+import { loadPyodide } from 'https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs'
+const files = import.meta.glob('../openmotor_py/**/*.py', { query: '?raw', import: 'default', eager: true })
+let pyodidePromise
+export async function getPyodide() {
+  if (!pyodidePromise) {
+    pyodidePromise = (async () => {
+      const pyodide = await loadPyodide()
+      await pyodide.loadPackage(['numpy', 'scipy'])
+      for (const [path, content] of Object.entries(files)) {
+        const rel = path.replace('../openmotor_py/', '')
+        const full = `/openmotor_py/${rel}`
+        pyodide.FS.mkdirTree(full.substring(0, full.lastIndexOf('/')))
+        pyodide.FS.writeFile(full, content)
+      }
+      await pyodide.runPythonAsync(`import sys\nsys.path.insert(0, '/openmotor_py')`)
+      return pyodide
+    })()
+  }
+  return pyodidePromise
+}
+export async function runMotorSimulation(motor) {
+  const pyodide = await getPyodide()
+  pyodide.globals.set('motor_input_json', JSON.stringify(motor))
+  const raw = await pyodide.runPythonAsync(`
+import json, traceback
+result = {}
+try:
+    import motorlib.motor
+    m = motorlib.motor.Motor(json.loads(motor_input_json))
+    sim = m.runSimulation()
+    channels = {}
+    for name, channel in sim.channels.items():
+        try:
+            channels[name] = channel.getData()
+        except Exception:
+            channels[name] = channel.data
+    result = {
+        'success': sim.success,
+        'alerts': [{'level': a.level.name, 'type': a.type.name, 'description': a.description, 'location': a.location} for a in sim.alerts],
+        'stats': {
+            'designation': sim.getDesignation() if sim.channels['force'].data else None,
+            'impulse': sim.getImpulse() if sim.channels['force'].data else None,
+            'isp': sim.getISP() if sim.channels['force'].data else None,
+            'burnTime': sim.getBurnTime() if sim.channels['time'].data else None,
+            'volumeLoading': sim.getVolumeLoading(),
+            'avgPressure': sim.getAveragePressure() if sim.channels['pressure'].data else None,
+            'peakPressure': sim.getMaxPressure() if sim.channels['pressure'].data else None,
+            'initialKn': sim.getInitialKN() if sim.channels['kn'].data else None,
+            'peakKn': sim.getPeakKN() if sim.channels['kn'].data else None,
+            'propellantMass': sim.getPropellantMass() if sim.channels['mass'].data else None,
+            'portRatio': sim.getPortRatio(),
+            'peakMassFlux': sim.getPeakMassFlux(),
+            'deliveredThrustCoeff': sim.getAdjustedThrustCoefficient() if sim.channels['force'].data else None
+        },
+        'channels': channels
+    }
+except Exception as exc:
+    result = {'error': str(exc), 'traceback': traceback.format_exc()}
+json.dumps(result)
+`)
+  return JSON.parse(raw)
+}
