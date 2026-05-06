@@ -32,12 +32,12 @@
     .stat span { color: #94a3b8; font-size: 12px; }
     .stat strong { font-size: 18px; }
     .alerts { margin: 0; padding-left: 18px; }
-    .results-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 16px; }
+    .results-layout { display: grid; grid-template-columns: 1fr 360px; gap: 16px; }
     .chart-wrap { margin-bottom: 18px; }
     .chart { width: 100%; height: auto; background: #020617; border-radius: 10px; border: 1px solid #1e293b; }
-    .error, .json-preview { white-space: pre-wrap; border-radius: 10px; padding: 12px; overflow: auto; }
-    .error { background: #220a0a; color: #fecaca; }
-    .json-preview { background: #020617; border: 1px solid #1e293b; max-height: 360px; }
+    .error { white-space: pre-wrap; border-radius: 10px; padding: 12px; overflow: auto; background: #220a0a; color: #fecaca; }
+    .grain-preview { width: 100%; aspect-ratio: 1; background: #020617; border: 1px solid #1e293b; border-radius: 10px; image-rendering: pixelated; }
+    .preview-meta { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: #94a3b8; margin-bottom: 10px; }
     @media (max-width: 1200px) { .content { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .results-layout { grid-template-columns: 1fr; } .fields { grid-template-columns: 1fr; } }
   </style>
 </head>

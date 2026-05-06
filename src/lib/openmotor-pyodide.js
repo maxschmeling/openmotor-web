@@ -95,3 +95,33 @@ except Exception as exc:
 json.dumps(result)
 `, { input_yaml: yamlText })
 }
+
+export function getGrainPreview(motor, grainIndex) {
+  return runPythonJson(`
+import json, traceback
+result = {}
+try:
+    import motorlib.motor
+    m = motorlib.motor.Motor(json.loads(motor_input_json))
+    grain_index = int(grain_index_json)
+    grain = m.grains[grain_index]
+    grain.simulationSetup(m.config)
+    masked, regression_map, contours, contour_lengths = grain.getRegressionData(m.config.getProperty('mapDim'), 12, True)
+
+    face = []
+    if masked is not None:
+        filled = masked.filled(-1).tolist() if hasattr(masked, 'filled') else masked.tolist()
+        face = filled
+
+    result = {
+        'grainType': grain.geomName,
+        'faceImage': face,
+        'contours': contours,
+        'contourLengths': {str(k): v for k, v in contour_lengths.items()},
+        'wallWeb': getattr(grain, 'wallWeb', None),
+    }
+except Exception as exc:
+    result = {'error': str(exc), 'traceback': traceback.format_exc()}
+json.dumps(result)
+`, { motor_input_json: motor, grain_index_json: String(grainIndex) })
+}
