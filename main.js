@@ -3,78 +3,34 @@ import { getPyodide, runMotorSimulation, exportRicYaml, importRicYaml, getGrainP
 
 const STORAGE_KEY = 'openmotor-web-state-v1'
 const allInhibited = ['Neither', 'Top', 'Bottom', 'Both']
+const plotOptions = [
+  ['force', 'Force'], ['pressure', 'Pressure'], ['kn', 'Kn'], ['mass', 'Mass'], ['massFlow', 'Mass Flow'], ['massFlux', 'Mass Flux'], ['exitPressure', 'Exit Pressure'], ['dThroat', 'Throat Change']
+]
 const num = (v) => Number.isFinite(v) ? v : 0
 const fmt = (v, digits=3) => v == null ? '—' : Number(v).toFixed(digits)
 const titleCase = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())
 const clone = (obj) => structuredClone(obj)
 
-function loadSavedMotor() {
+function loadSavedState() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return clone(defaultMotor)
+    if (!raw) return { motor: clone(defaultMotor), selectedPlots: ['force', 'pressure', 'kn'] }
     const parsed = JSON.parse(raw)
-    return parsed?.motor || clone(defaultMotor)
+    return { motor: parsed?.motor || clone(defaultMotor), selectedPlots: parsed?.selectedPlots || ['force', 'pressure', 'kn'] }
   } catch {
-    return clone(defaultMotor)
+    return { motor: clone(defaultMotor), selectedPlots: ['force', 'pressure', 'kn'] }
   }
 }
 
-const state = {
-  motor: loadSavedMotor(),
-  selectedGrain: 0,
-  result: null,
-  grainPreview: null,
-  previewLayer: 0,
-  status: 'Booting…',
-  running: false,
-  previewing: false,
-  fileName: 'untitled.ric',
-  history: [],
-  future: [],
-}
-
+const saved = loadSavedState()
+const state = { motor: saved.motor, selectedPlots: saved.selectedPlots, selectedGrain: 0, result: null, grainPreview: null, previewLayer: 0, status: 'Booting…', running: false, previewing: false, fileName: 'untitled.ric', history: [], future: [] }
 const app = document.getElementById('app')
 
-function pushHistory() {
-  state.history.push(clone(state.motor))
-  if (state.history.length > 100) state.history.shift()
-  state.future = []
-}
-
-function persistState() {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ motor: state.motor }))
-  } catch {}
-}
-
-function commitMotorChange(mutator) {
-  pushHistory()
-  mutator()
-  state.grainPreview = null
-  persistState()
-}
-
-function undo() {
-  if (!state.history.length) return
-  state.future.push(clone(state.motor))
-  state.motor = state.history.pop()
-  state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1))
-  state.grainPreview = null
-  state.status = 'Undo.'
-  persistState()
-  render()
-}
-
-function redo() {
-  if (!state.future.length) return
-  state.history.push(clone(state.motor))
-  state.motor = state.future.pop()
-  state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1))
-  state.grainPreview = null
-  state.status = 'Redo.'
-  persistState()
-  render()
-}
+function pushHistory() { state.history.push(clone(state.motor)); if (state.history.length > 100) state.history.shift(); state.future = [] }
+function persistState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ motor: state.motor, selectedPlots: state.selectedPlots })) } catch {} }
+function commitMotorChange(mutator) { pushHistory(); mutator(); state.grainPreview = null; persistState() }
+function undo() { if (!state.history.length) return; state.future.push(clone(state.motor)); state.motor = state.history.pop(); state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1)); state.grainPreview = null; state.status = 'Undo.'; persistState(); render() }
+function redo() { if (!state.future.length) return; state.history.push(clone(state.motor)); state.motor = state.future.pop(); state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1)); state.grainPreview = null; state.status = 'Redo.'; persistState(); render() }
 
 function grainFields(grain) { return Object.entries(grain.properties).map(([key, value]) => typeof value === 'boolean' ? `<label class="field"><span>${titleCase(key)}</span><input data-scope="grain" data-key="${key}" type="checkbox" ${value ? 'checked' : ''}></label>` : key === 'inhibitedEnds' ? `<label class="field"><span>${titleCase(key)}</span><select data-scope="grain" data-key="${key}">${allInhibited.map(opt => `<option ${opt===value?'selected':''}>${opt}</option>`).join('')}</select></label>` : `<label class="field"><span>${titleCase(key)}</span><input data-scope="grain" data-key="${key}" type="number" step="any" value="${value}"></label>`).join('') }
 function scalarFields(obj, scope, textKeys = []) { return Object.entries(obj).map(([key, value]) => Array.isArray(value) || typeof value === 'object' ? '' : `<label class="field"><span>${titleCase(key)}</span><input data-scope="${scope}" data-key="${key}" type="${textKeys.includes(key) || typeof value === 'string' ? 'text' : 'number'}" ${typeof value === 'number' ? 'step="any"' : ''} value="${value}"></label>`).join('') }
@@ -85,17 +41,16 @@ function renderPreview() {
   const data = state.grainPreview.faceImage
   const rows = data.length, cols = data[0]?.length || 0
   let rects = ''
-  for (let y = 0; y < rows; y += 2) for (let x = 0; x < cols; x += 2) {
-    const v = data[y][x]
-    let fill = '#0f172a'
-    if (v === -1) fill = '#020617'; else if (v === 0) fill = '#e2e8f0'; else fill = '#38bdf8'
-    rects += `<rect x="${x/2}" y="${y/2}" width="1" height="1" fill="${fill}" />`
-  }
+  for (let y = 0; y < rows; y += 2) for (let x = 0; x < cols; x += 2) { const v = data[y][x]; let fill = '#0f172a'; if (v === -1) fill = '#020617'; else if (v === 0) fill = '#e2e8f0'; else fill = '#38bdf8'; rects += `<rect x="${x/2}" y="${y/2}" width="1" height="1" fill="${fill}" />` }
   const layers = state.grainPreview.contours || []
   const activeLayers = layers.slice(0, state.previewLayer + 1)
   const polylines = activeLayers.flatMap((layer, idx) => layer.map(contour => `<polyline fill="none" stroke="hsl(${200 - idx * 10} 90% 65%)" stroke-width="0.9" points="${contour.map(([x, y]) => `${x/2},${y/2}`).join(' ')}" opacity="0.95" />`)).join('')
   const maxLayer = Math.max(0, layers.length - 1)
   return `<div class="preview-meta"><span>Type: ${state.grainPreview.grainType}</span><span>Wall web: ${fmt(state.grainPreview.wallWeb)}</span></div><label class="field"><span>Regression layer ${state.previewLayer + 1} / ${layers.length || 1}</span><input id="preview-layer" type="range" min="0" max="${maxLayer}" value="${Math.min(state.previewLayer, maxLayer)}" step="1"></label><svg viewBox="0 0 ${Math.ceil(cols/2)} ${Math.ceil(rows/2)}" class="grain-preview">${rects}${polylines}</svg>`
+}
+
+function renderPlotSelector() {
+  return `<div class="plot-selectors">${['plot-a','plot-b','plot-c'].map((id, idx) => `<label class="field"><span>Plot ${idx + 1}</span><select data-plot-index="${idx}" id="${id}">${plotOptions.map(([value, label]) => `<option value="${value}" ${state.selectedPlots[idx] === value ? 'selected' : ''}>${label}</option>`).join('')}</select></label>`).join('')}</div>`
 }
 
 function render() {
@@ -117,10 +72,10 @@ function render() {
           <div class="panel"><h3>Simulation config</h3><div class="fields">${scalarFields(state.motor.config, 'config')}</div></div>
         </aside>
         <main class="main">
-          <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, plots.</p></section>
+          <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, and configurable plots.</p></section>
           <section class="stats-grid">${[['Designation', stats.designation], ['Impulse (Ns)', fmt(stats.impulse)], ['ISP (s)', fmt(stats.isp)], ['Burn time (s)', fmt(stats.burnTime)], ['Volume loading (%)', fmt(stats.volumeLoading)], ['Avg pressure (Pa)', fmt(stats.avgPressure, 0)], ['Peak pressure (Pa)', fmt(stats.peakPressure, 0)], ['Initial Kn', fmt(stats.initialKn)], ['Peak Kn', fmt(stats.peakKn)], ['Propellant mass (kg)', fmt(stats.propellantMass)]].map(([k,v]) => `<div class="stat"><span>${k}</span><strong>${v ?? '—'}</strong></div>`).join('')}</section>
           <section class="panel results-layout"><div><h3>Alerts</h3>${state.result?.error ? `<pre class="error">${state.result.error}\n\n${state.result.traceback || ''}</pre>` : ''}<ul class="alerts">${(state.result?.alerts || []).map(a => `<li><strong>${a.level}</strong> ${a.type}: ${a.description}${a.location ? ` <span class="muted">(${a.location})</span>` : ''}</li>`).join('') || '<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain regression preview</h3>${renderPreview()}</div></section>
-          <section class="panel"><h3>Plots</h3>${renderChart('force', 'Force', state.result?.channels?.time, state.result?.channels?.force)}${renderChart('pressure', 'Pressure', state.result?.channels?.time, state.result?.channels?.pressure)}${renderChart('kn', 'Kn', state.result?.channels?.time, state.result?.channels?.kn)}</section>
+          <section class="panel"><div class="row wrap between"><h3>Plots</h3></div>${renderPlotSelector()}${state.selectedPlots.map((channel) => renderChart(channel, plotOptions.find(([v]) => v === channel)?.[1] || channel, state.result?.channels?.time, state.result?.channels?.[channel])).join('')}</section>
         </main>
       </div>
     </div>`
@@ -152,9 +107,11 @@ function bindEvents() {
   document.getElementById('del-grain').onclick = () => { commitMotorChange(() => { state.motor.grains.splice(state.selectedGrain, 1); state.selectedGrain = Math.max(0, state.selectedGrain - 1) }); render() }
   document.getElementById('run-sim').onclick = async () => { state.running = true; state.status = 'Running simulation in Pyodide…'; render(); try { state.result = await runMotorSimulation(state.motor); state.status = state.result.error ? 'Simulation failed.' : 'Simulation complete.' } catch (err) { state.result = { error: String(err?.stack || err) }; state.status = 'Simulation bootstrap failed.' } finally { state.running = false; render() } }
   document.getElementById('preview-layer')?.addEventListener('input', (e) => { state.previewLayer = Number(e.target.value); render() })
+  document.querySelectorAll('[data-plot-index]').forEach(el => el.onchange = (e) => { state.selectedPlots[Number(e.target.dataset.plotIndex)] = e.target.value; persistState(); render() })
   document.querySelectorAll('input[data-scope], select[data-scope]').forEach(el => {
     el.onchange = (e) => {
       const { scope, key } = e.target.dataset
+      if (scope == null) return
       let value
       if (e.target.type === 'checkbox') value = e.target.checked
       else if (e.target.type === 'number') value = num(parseFloat(e.target.value))
