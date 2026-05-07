@@ -1,12 +1,80 @@
 import { defaultMotor, grainTemplates } from './src/lib/openmotor-defaults.js'
 import { getPyodide, runMotorSimulation, exportRicYaml, importRicYaml, getGrainPreview } from './src/lib/openmotor-pyodide.js'
 
-const state = { motor: structuredClone(defaultMotor), selectedGrain: 0, result: null, grainPreview: null, previewLayer: 0, status: 'Booting…', running: false, previewing: false, fileName: 'untitled.ric' }
-const app = document.getElementById('app')
+const STORAGE_KEY = 'openmotor-web-state-v1'
 const allInhibited = ['Neither', 'Top', 'Bottom', 'Both']
 const num = (v) => Number.isFinite(v) ? v : 0
 const fmt = (v, digits=3) => v == null ? '—' : Number(v).toFixed(digits)
 const titleCase = (key) => key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase())
+const clone = (obj) => structuredClone(obj)
+
+function loadSavedMotor() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw) return clone(defaultMotor)
+    const parsed = JSON.parse(raw)
+    return parsed?.motor || clone(defaultMotor)
+  } catch {
+    return clone(defaultMotor)
+  }
+}
+
+const state = {
+  motor: loadSavedMotor(),
+  selectedGrain: 0,
+  result: null,
+  grainPreview: null,
+  previewLayer: 0,
+  status: 'Booting…',
+  running: false,
+  previewing: false,
+  fileName: 'untitled.ric',
+  history: [],
+  future: [],
+}
+
+const app = document.getElementById('app')
+
+function pushHistory() {
+  state.history.push(clone(state.motor))
+  if (state.history.length > 100) state.history.shift()
+  state.future = []
+}
+
+function persistState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ motor: state.motor }))
+  } catch {}
+}
+
+function commitMotorChange(mutator) {
+  pushHistory()
+  mutator()
+  state.grainPreview = null
+  persistState()
+}
+
+function undo() {
+  if (!state.history.length) return
+  state.future.push(clone(state.motor))
+  state.motor = state.history.pop()
+  state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1))
+  state.grainPreview = null
+  state.status = 'Undo.'
+  persistState()
+  render()
+}
+
+function redo() {
+  if (!state.future.length) return
+  state.history.push(clone(state.motor))
+  state.motor = state.future.pop()
+  state.selectedGrain = Math.min(state.selectedGrain, Math.max(0, state.motor.grains.length - 1))
+  state.grainPreview = null
+  state.status = 'Redo.'
+  persistState()
+  render()
+}
 
 function grainFields(grain) { return Object.entries(grain.properties).map(([key, value]) => typeof value === 'boolean' ? `<label class="field"><span>${titleCase(key)}</span><input data-scope="grain" data-key="${key}" type="checkbox" ${value ? 'checked' : ''}></label>` : key === 'inhibitedEnds' ? `<label class="field"><span>${titleCase(key)}</span><select data-scope="grain" data-key="${key}">${allInhibited.map(opt => `<option ${opt===value?'selected':''}>${opt}</option>`).join('')}</select></label>` : `<label class="field"><span>${titleCase(key)}</span><input data-scope="grain" data-key="${key}" type="number" step="any" value="${value}"></label>`).join('') }
 function scalarFields(obj, scope, textKeys = []) { return Object.entries(obj).map(([key, value]) => Array.isArray(value) || typeof value === 'object' ? '' : `<label class="field"><span>${titleCase(key)}</span><input data-scope="${scope}" data-key="${key}" type="${textKeys.includes(key) || typeof value === 'string' ? 'text' : 'number'}" ${typeof value === 'number' ? 'step="any"' : ''} value="${value}"></label>`).join('') }
@@ -17,28 +85,17 @@ function renderPreview() {
   const data = state.grainPreview.faceImage
   const rows = data.length, cols = data[0]?.length || 0
   let rects = ''
-  for (let y = 0; y < rows; y += 2) {
-    for (let x = 0; x < cols; x += 2) {
-      const v = data[y][x]
-      let fill = '#0f172a'
-      if (v === -1) fill = '#020617'
-      else if (v === 0) fill = '#e2e8f0'
-      else fill = '#38bdf8'
-      rects += `<rect x="${x/2}" y="${y/2}" width="1" height="1" fill="${fill}" />`
-    }
+  for (let y = 0; y < rows; y += 2) for (let x = 0; x < cols; x += 2) {
+    const v = data[y][x]
+    let fill = '#0f172a'
+    if (v === -1) fill = '#020617'; else if (v === 0) fill = '#e2e8f0'; else fill = '#38bdf8'
+    rects += `<rect x="${x/2}" y="${y/2}" width="1" height="1" fill="${fill}" />`
   }
   const layers = state.grainPreview.contours || []
   const activeLayers = layers.slice(0, state.previewLayer + 1)
-  const polylines = activeLayers.flatMap((layer, idx) => layer.map(contour => {
-    const pts = contour.map(([x, y]) => `${x/2},${y/2}`).join(' ')
-    const hue = 200 - idx * 10
-    return `<polyline fill="none" stroke="hsl(${hue} 90% 65%)" stroke-width="0.9" points="${pts}" opacity="0.95" />`
-  })).join('')
+  const polylines = activeLayers.flatMap((layer, idx) => layer.map(contour => `<polyline fill="none" stroke="hsl(${200 - idx * 10} 90% 65%)" stroke-width="0.9" points="${contour.map(([x, y]) => `${x/2},${y/2}`).join(' ')}" opacity="0.95" />`)).join('')
   const maxLayer = Math.max(0, layers.length - 1)
-  return `
-    <div class="preview-meta"><span>Type: ${state.grainPreview.grainType}</span><span>Wall web: ${fmt(state.grainPreview.wallWeb)}</span></div>
-    <label class="field"><span>Regression layer ${state.previewLayer + 1} / ${layers.length || 1}</span><input id="preview-layer" type="range" min="0" max="${maxLayer}" value="${Math.min(state.previewLayer, maxLayer)}" step="1"></label>
-    <svg viewBox="0 0 ${Math.ceil(cols/2)} ${Math.ceil(rows/2)}" class="grain-preview">${rects}${polylines}</svg>`
+  return `<div class="preview-meta"><span>Type: ${state.grainPreview.grainType}</span><span>Wall web: ${fmt(state.grainPreview.wallWeb)}</span></div><label class="field"><span>Regression layer ${state.previewLayer + 1} / ${layers.length || 1}</span><input id="preview-layer" type="range" min="0" max="${maxLayer}" value="${Math.min(state.previewLayer, maxLayer)}" step="1"></label><svg viewBox="0 0 ${Math.ceil(cols/2)} ${Math.ceil(rows/2)}" class="grain-preview">${rects}${polylines}</svg>`
 }
 
 function render() {
@@ -47,8 +104,8 @@ function render() {
   app.innerHTML = `
     <div class="shell">
       <header class="topbar">
-        <div><h1>openMotor Web</h1><p class="muted">${state.fileName} · ${state.status}</p></div>
-        <div class="actions row wrap"><button id="new-motor">New</button><button id="open-ric">Open .ric</button><button id="save-ric">Save .ric</button><button id="preview-grain" ${state.previewing ? 'disabled' : ''}>${state.previewing ? 'Loading preview…' : 'Preview grain'}</button><button id="run-sim" ${state.running ? 'disabled' : ''}>${state.running ? 'Running…' : 'Run simulation'}</button><input id="ric-file-input" type="file" accept=".ric,.yaml,.yml,text/yaml" hidden /></div>
+        <div><h1>openMotor Web</h1><p class="muted">${state.fileName} · ${state.status} · autosaved locally</p></div>
+        <div class="actions row wrap"><button id="new-motor">New</button><button id="undo" ${state.history.length ? '' : 'disabled'}>Undo</button><button id="redo" ${state.future.length ? '' : 'disabled'}>Redo</button><button id="open-ric">Open .ric</button><button id="save-ric">Save .ric</button><button id="preview-grain" ${state.previewing ? 'disabled' : ''}>${state.previewing ? 'Loading preview…' : 'Preview grain'}</button><button id="run-sim" ${state.running ? 'disabled' : ''}>${state.running ? 'Running…' : 'Run simulation'}</button><input id="ric-file-input" type="file" accept=".ric,.yaml,.yml,text/yaml" hidden /></div>
       </header>
       <div class="content">
         <aside class="sidebar">
@@ -78,23 +135,40 @@ function renderChart(id, title, xs, ys) {
 }
 
 async function saveRic() { state.status = 'Exporting .ric…'; render(); const exported = await exportRicYaml(state.motor); if (exported.error) { state.result = exported; state.status = 'Export failed.'; render(); return } const blob = new Blob([exported.yaml], { type: 'application/x-yaml' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = state.fileName || 'motor.ric'; a.click(); URL.revokeObjectURL(url); state.status = 'Saved .ric file.'; render() }
-async function loadRic(file) { const text = await file.text(); state.status = 'Importing .ric…'; render(); const imported = await importRicYaml(text); if (imported.error) { state.result = imported; state.status = 'Import failed.' } else { state.motor = imported.motor; state.fileName = file.name || 'imported.ric'; state.selectedGrain = 0; state.result = null; state.grainPreview = null; state.status = 'Imported .ric file.' } render() }
+async function loadRic(file) { const text = await file.text(); state.status = 'Importing .ric…'; render(); const imported = await importRicYaml(text); if (imported.error) { state.result = imported; state.status = 'Import failed.' } else { pushHistory(); state.motor = imported.motor; state.fileName = file.name || 'imported.ric'; state.selectedGrain = 0; state.result = null; state.grainPreview = null; state.status = 'Imported .ric file.'; persistState() } render() }
 async function loadPreview() { state.previewing = true; state.status = 'Generating grain preview…'; render(); try { state.grainPreview = await getGrainPreview(state.motor, state.selectedGrain); state.previewLayer = Math.max(0, (state.grainPreview.contours?.length || 1) - 1); state.status = state.grainPreview.error ? 'Preview failed.' : 'Preview ready.' } catch (err) { state.grainPreview = { error: String(err?.stack || err) }; state.status = 'Preview failed.' } finally { state.previewing = false; render() } }
 
 function bindEvents() {
   document.querySelectorAll('[data-grain-index]').forEach(el => el.onclick = () => { state.selectedGrain = Number(el.dataset.grainIndex); state.grainPreview = null; render() })
-  document.getElementById('new-motor').onclick = () => { state.motor = structuredClone(defaultMotor); state.selectedGrain = 0; state.result = null; state.grainPreview = null; state.fileName = 'untitled.ric'; state.status = 'Reset.'; render() }
+  document.getElementById('new-motor').onclick = () => { pushHistory(); state.motor = clone(defaultMotor); state.selectedGrain = 0; state.result = null; state.grainPreview = null; state.fileName = 'untitled.ric'; state.status = 'Reset.'; persistState(); render() }
+  document.getElementById('undo').onclick = undo
+  document.getElementById('redo').onclick = redo
   document.getElementById('open-ric').onclick = () => document.getElementById('ric-file-input').click()
   document.getElementById('ric-file-input').onchange = async (e) => { const file = e.target.files?.[0]; if (file) await loadRic(file); e.target.value = '' }
   document.getElementById('save-ric').onclick = saveRic
   document.getElementById('preview-grain').onclick = loadPreview
-  document.getElementById('add-grain').onclick = () => { const type = document.getElementById('add-grain-type').value; state.motor.grains.push({ type, properties: structuredClone(grainTemplates[type]) }); state.selectedGrain = state.motor.grains.length - 1; state.grainPreview = null; render() }
-  document.getElementById('dup-grain').onclick = () => { const g = state.motor.grains[state.selectedGrain]; state.motor.grains.splice(state.selectedGrain + 1, 0, structuredClone(g)); state.selectedGrain++; state.grainPreview = null; render() }
-  document.getElementById('del-grain').onclick = () => { state.motor.grains.splice(state.selectedGrain, 1); state.selectedGrain = Math.max(0, state.selectedGrain - 1); state.grainPreview = null; render() }
+  document.getElementById('add-grain').onclick = () => { const type = document.getElementById('add-grain-type').value; commitMotorChange(() => { state.motor.grains.push({ type, properties: clone(grainTemplates[type]) }); state.selectedGrain = state.motor.grains.length - 1 }); render() }
+  document.getElementById('dup-grain').onclick = () => { commitMotorChange(() => { const g = state.motor.grains[state.selectedGrain]; state.motor.grains.splice(state.selectedGrain + 1, 0, clone(g)); state.selectedGrain++ }); render() }
+  document.getElementById('del-grain').onclick = () => { commitMotorChange(() => { state.motor.grains.splice(state.selectedGrain, 1); state.selectedGrain = Math.max(0, state.selectedGrain - 1) }); render() }
   document.getElementById('run-sim').onclick = async () => { state.running = true; state.status = 'Running simulation in Pyodide…'; render(); try { state.result = await runMotorSimulation(state.motor); state.status = state.result.error ? 'Simulation failed.' : 'Simulation complete.' } catch (err) { state.result = { error: String(err?.stack || err) }; state.status = 'Simulation bootstrap failed.' } finally { state.running = false; render() } }
   document.getElementById('preview-layer')?.addEventListener('input', (e) => { state.previewLayer = Number(e.target.value); render() })
-  document.querySelectorAll('input[data-scope], select[data-scope]').forEach(el => { el.onchange = (e) => { const { scope, key } = e.target.dataset; let value; if (e.target.type === 'checkbox') value = e.target.checked; else if (e.target.type === 'number') value = num(parseFloat(e.target.value)); else value = e.target.value; if (scope === 'grain') state.motor.grains[state.selectedGrain].properties[key] = value; else if (scope === 'nozzle') state.motor.nozzle[key] = value; else if (scope === 'propellant') state.motor.propellant[key] = value; else if (scope === 'tab') state.motor.propellant.tabs[0][key] = value; else if (scope === 'config') state.motor.config[key] = value; state.grainPreview = null } })
+  document.querySelectorAll('input[data-scope], select[data-scope]').forEach(el => {
+    el.onchange = (e) => {
+      const { scope, key } = e.target.dataset
+      let value
+      if (e.target.type === 'checkbox') value = e.target.checked
+      else if (e.target.type === 'number') value = num(parseFloat(e.target.value))
+      else value = e.target.value
+      commitMotorChange(() => {
+        if (scope === 'grain') state.motor.grains[state.selectedGrain].properties[key] = value
+        else if (scope === 'nozzle') state.motor.nozzle[key] = value
+        else if (scope === 'propellant') state.motor.propellant[key] = value
+        else if (scope === 'tab') state.motor.propellant.tabs[0][key] = value
+        else if (scope === 'config') state.motor.config[key] = value
+      })
+    }
+  })
 }
 
-async function boot() { render(); try { await getPyodide(); state.status = 'Pyodide ready.' } catch { state.status = 'Pyodide failed to load.' } render() }
+async function boot() { render(); try { await getPyodide(); state.status = 'Pyodide ready.' } catch { state.status = 'Pyodide failed to load.' } persistState(); render() }
 boot()
