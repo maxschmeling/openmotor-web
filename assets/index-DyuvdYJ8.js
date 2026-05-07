@@ -1,4 +1,4 @@
-import{loadPyodide as C}from"https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs";(function(){const n=document.createElement("link").relList;if(n&&n.supports&&n.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))a(r);new MutationObserver(r=>{for(const i of r)if(i.type==="childList")for(const l of i.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&a(l)}).observe(document,{childList:!0,subtree:!0});function s(r){const i={};return r.integrity&&(i.integrity=r.integrity),r.referrerPolicy&&(i.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?i.credentials="include":r.crossOrigin==="anonymous"?i.credentials="omit":i.credentials="same-origin",i}function a(r){if(r.ep)return;r.ep=!0;const i=s(r);fetch(r.href,i)}})();const x={nozzle:{throat:.01428,exit:.02,efficiency:.95,divAngle:15,convAngle:45,throatLength:.005,slagCoeff:0,erosionCoeff:0},propellant:{name:"KNSU",density:1890,tabs:[{minPressure:0,maxPressure:6895e3,a:101e-6,n:.319,t:1720,m:41.98,k:1.133}]},grains:[{type:"BATES",properties:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"}}],config:{maxPressure:7e7,maxMassFlux:1e4,maxMachNumber:100,minPortThroat:1,flowSeparationWarnPercent:.01,burnoutWebThres:254e-7,burnoutThrustThres:.01,timestep:1e-4,ambPressure:101325,mapDim:401,sepPressureRatio:.4}},E={BATES:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"},"Star Grain":{diameter:.05,length:.1,numPoints:6,pointLength:.015,pointWidth:.01,inhibitedEnds:"Both"},Finocyl:{diameter:.06,length:.12,numFins:6,finWidth:.006,finLength:.012,coreDiameter:.02,invertedFins:!1,inhibitedEnds:"Both"},"Moon Burner":{diameter:.06,length:.12,coreDiameter:.02,coreOffset:.008,inhibitedEnds:"Both"},"X Core":{diameter:.06,length:.12,slotWidth:.008,slotLength:.015,inhibitedEnds:"Both"},"D Grain":{diameter:.06,length:.12,slotOffset:0,inhibitedEnds:"Both"},"C Grain":{diameter:.06,length:.12,slotWidth:.01,slotOffset:0,inhibitedEnds:"Both"},Conical:{diameter:.06,length:.12,forwardCoreDiameter:.015,aftCoreDiameter:.025,inhibitedEnds:"Neither"},"End Burner":{diameter:.06,length:.12}},k="from ._find_perimeter import find_perimeter",G=`import numpy as np
+import{loadPyodide as V}from"https://cdn.jsdelivr.net/pyodide/v0.27.2/full/pyodide.mjs";(function(){const n=document.createElement("link").relList;if(n&&n.supports&&n.supports("modulepreload"))return;for(const a of document.querySelectorAll('link[rel="modulepreload"]'))i(a);new MutationObserver(a=>{for(const s of a)if(s.type==="childList")for(const l of s.addedNodes)l.tagName==="LINK"&&l.rel==="modulepreload"&&i(l)}).observe(document,{childList:!0,subtree:!0});function r(a){const s={};return a.integrity&&(s.integrity=a.integrity),a.referrerPolicy&&(s.referrerPolicy=a.referrerPolicy),a.crossOrigin==="use-credentials"?s.credentials="include":a.crossOrigin==="anonymous"?s.credentials="omit":s.credentials="same-origin",s}function i(a){if(a.ep)return;a.ep=!0;const s=r(a);fetch(a.href,s)}})();const A={nozzle:{throat:.01428,exit:.02,efficiency:.95,divAngle:15,convAngle:45,throatLength:.005,slagCoeff:0,erosionCoeff:0},propellant:{name:"KNSU",density:1890,tabs:[{minPressure:0,maxPressure:6895e3,a:101e-6,n:.319,t:1720,m:41.98,k:1.133}]},grains:[{type:"BATES",properties:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"}}],config:{maxPressure:7e7,maxMassFlux:1e4,maxMachNumber:100,minPortThroat:1,flowSeparationWarnPercent:.01,burnoutWebThres:254e-7,burnoutThrustThres:.01,timestep:1e-4,ambPressure:101325,mapDim:401,sepPressureRatio:.4}},M={BATES:{diameter:.083058,length:.1397,coreDiameter:.05,inhibitedEnds:"Neither"},"Star Grain":{diameter:.05,length:.1,numPoints:6,pointLength:.015,pointWidth:.01,inhibitedEnds:"Both"},Finocyl:{diameter:.06,length:.12,numFins:6,finWidth:.006,finLength:.012,coreDiameter:.02,invertedFins:!1,inhibitedEnds:"Both"},"Moon Burner":{diameter:.06,length:.12,coreDiameter:.02,coreOffset:.008,inhibitedEnds:"Both"},"X Core":{diameter:.06,length:.12,slotWidth:.008,slotLength:.015,inhibitedEnds:"Both"},"D Grain":{diameter:.06,length:.12,slotOffset:0,inhibitedEnds:"Both"},"C Grain":{diameter:.06,length:.12,slotWidth:.01,slotOffset:0,inhibitedEnds:"Both"},Conical:{diameter:.06,length:.12,forwardCoreDiameter:.015,aftCoreDiameter:.025,inhibitedEnds:"Neither"},"End Burner":{diameter:.06,length:.12}},C="from ._find_perimeter import find_perimeter",k=`import numpy as np
 from collections import deque
 
 
@@ -118,7 +118,7 @@ def _assemble_contours(segments):
             ends[norm(to_point)] = (head, head_num)
 
     return [np.array(contour) for _, contour in sorted(contours.items())]
-`,I="",z=`"""Contains constants needed for motor calculations."""
+`,G="",I=`"""Contains constants needed for motor calculations."""
 
 # R, in units of J/(kmol*K)
 gasConstant = 8314.462618
@@ -133,7 +133,7 @@ atmosphericPressure = 101325
 maximumRefLength = 24.6
 
 # Maximum reference diameter for capping user inputs, in units of meters
-maximumRefDiameter = 6.6`,O=`"""This module includes the geometry methods that openMotor uses in its calculations"""
+maximumRefDiameter = 6.6`,z=`"""This module includes the geometry methods that openMotor uses in its calculations"""
 
 import math
 from typing import Union
@@ -238,7 +238,7 @@ def clean(
 def dist(point1: tuple[int, int], point2: tuple[int, int]) -> int:
     """Returns the distance between two points [x1, y1], [x2, y2]"""
     return ((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2) ** 0.5
-`,B=`"""
+`,O=`"""
 This module includes the base classes from which all grain classes should inherit. None of these objects
 should be instantiated directly.
 """
@@ -736,7 +736,7 @@ class FmmGrain(PerforatedGrain):
             print(exc)
 
         return (masked, regressionMap, contours, contourLengths)
-`,U=`from .endBurner import *
+`,B=`from .endBurner import *
 from .bates import *
 from .star import *
 from .finocyl import *
@@ -751,7 +751,7 @@ grainTypes = {}
 grainClasses = [BatesGrain, Finocyl, MoonBurner, XCore, CGrain, DGrain, RodTubeGrain, ConicalGrain, StarGrain, EndBurningGrain]
 for grainType in grainClasses:
     grainTypes[grainType.geomName] = grainType
-`,W=`"""BATES submodule"""
+`,U=`"""BATES submodule"""
 
 import numpy as np
 try:
@@ -838,7 +838,7 @@ class BatesGrain(PerforatedGrain):
             print(exc)
 
         return (masked, regressionMap, contours, contourLengths)
-`,$=`"""C Grain submodule"""
+`,W=`"""C Grain submodule"""
 
 import numpy as np
 
@@ -885,7 +885,7 @@ class CGrain(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.WARNING, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,j=`"""BATES submodule"""
+`,$=`"""BATES submodule"""
 
 from math import atan, cos, tan
 
@@ -1087,7 +1087,7 @@ class ConicalGrain(Grain):
         if self.props['forwardCoreDiameter'].getValue() > self.props['diameter'].getValue():
             errors.append(SimAlert(SimAlertLevel.ERROR, SimAlertType.GEOMETRY, 'Forward core diameter cannot be larger than grain diameter.'))
         return errors
-`,Y=`"""Custom Grain submodule"""
+`,j=`"""Custom Grain submodule"""
 
 import skimage.draw as draw
 
@@ -1122,7 +1122,7 @@ class CustomGrain(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.WARNING, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,q=`"""D Grain submodule"""
+`,Y=`"""D Grain submodule"""
 
 from ..grain import FmmGrain
 from ..properties import FloatProperty
@@ -1159,7 +1159,7 @@ class DGrain(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.ERROR, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,X=`"""End Burner submodule"""
+`,q=`"""End Burner submodule"""
 
 from ..grain import Grain
 from ..import geometry
@@ -1191,7 +1191,7 @@ class EndBurningGrain(Grain):
 
     def getEndPositions(self, regDist):
         return (0, self.props['length'].getValue() - regDist)
-`,K=`"""Finocyl grain submodule"""
+`,X=`"""Finocyl grain submodule"""
 
 import numpy as np
 
@@ -1289,7 +1289,7 @@ class Finocyl(FmmGrain):
                 errors.append(SimAlert(level, SimAlertType.GEOMETRY, 'Fin tips intersect'))
 
         return errors
-`,H=`"""Moon burning grain submodule"""
+`,K=`"""Moon burning grain submodule"""
 
 from ..grain import FmmGrain
 from ..properties import FloatProperty
@@ -1328,7 +1328,7 @@ class MoonBurner(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.WARNING, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,J=`"""Rod and Tube submodule"""
+`,H=`"""Rod and Tube submodule"""
 
 import numpy as np
 try:
@@ -1452,7 +1452,7 @@ class RodTubeGrain(PerforatedGrain):
             print(exc)
 
         return (masked, regressionMap, contours, contourLengths)
-`,Q=`"""Star grain submodule"""
+`,J=`"""Star grain submodule"""
 
 import numpy as np
 
@@ -1505,7 +1505,7 @@ class StarGrain(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.ERROR, SimAlertType.GEOMETRY, 'Point width must not be 0'))
 
         return errors
-`,Z=`"""X Core grain submodule"""
+`,Q=`"""X Core grain submodule"""
 
 import numpy as np
 
@@ -1549,7 +1549,7 @@ class XCore(FmmGrain):
             errors.append(SimAlert(SimAlertLevel.WARNING, SimAlertType.GEOMETRY, aText))
 
         return errors
-`,ee=`"""Contains the motor class and a supporting configuration property collection."""
+`,Z=`"""Contains the motor class and a supporting configuration property collection."""
 
 from typing import Dict, Union, List
 import numpy as np
@@ -2046,7 +2046,7 @@ class Motor:
         results["diameter"] = simRes.getMaxPropellantDiameter()
 
         return results
-`,ne=`"""This submodule houses the nozzle object and functions related to isentropic flow"""
+`,ee=`"""This submodule houses the nozzle object and functions related to isentropic flow"""
 import math
 
 from scipy.optimize import fsolve
@@ -2161,7 +2161,7 @@ class Nozzle(PropertyCollection):
             aText = 'Efficiency must not be 0'
             errors.append(SimAlert(SimAlertLevel.ERROR, SimAlertType.CONSTRAINT, aText, 'Nozzle'))
         return errors
-`,te=`"""Propellant submodule that contains the propellant class."""
+`,ne=`"""Propellant submodule that contains the propellant class."""
 
 from scipy.optimize import fsolve
 
@@ -2292,7 +2292,7 @@ class Propellant(PropertyCollection):
     def addTab(self, tab):
         """Adds a set of combustion properties to the propellant"""
         self.props['tabs'].addTab(tab)
-`,re=`"""This module includes a properties, which are objects that contain different datatypes and enforce conditions on
+`,te=`"""This module includes a properties, which are objects that contain different datatypes and enforce conditions on
 them, such as allowed ranges. They also can optionally associate a unit with the value, which aids with display and
 conversion of the value."""
 
@@ -2440,7 +2440,7 @@ class PropertyCollection:
     def setProperty(self, prop, value):
         """Set the value of a specific property"""
         self.props[prop].setValue(value)
-`,se=`"""This module contains the classes that are returned from a simulation, including the main results class and
+`,re=`"""This module contains the classes that are returned from a simulation, including the main results class and
 the channels and components that it is comprised of."""
 
 from typing import List
@@ -2844,7 +2844,7 @@ class SimulationResult:
             out += "\\n"
 
         return out
-`,ae=`"""This module contains tables of units and their long form names, their conversion rates with other units, and
+`,se=`"""This module contains tables of units and their long form names, their conversion rates with other units, and
 functions for performing conversion."""
 
 # The keys in this dictionary specify the units that all calculations are done in internally
@@ -2951,8 +2951,8 @@ def convFormat(quantity, originUnit, destUnit, places=3):
     includes the unit appended to the end."""
     rounded = round(convert(quantity, originUnit, destUnit), places)
     return '{} {}'.format(rounded, destUnit)
-`,ie=Object.assign({"../openmotor_py/mathlib/__init__.py":k,"../openmotor_py/mathlib/_find_perimeter.py":G,"../openmotor_py/motorlib/__init__.py":I,"../openmotor_py/motorlib/constants.py":z,"../openmotor_py/motorlib/geometry.py":O,"../openmotor_py/motorlib/grain.py":B,"../openmotor_py/motorlib/grains/__init__.py":U,"../openmotor_py/motorlib/grains/bates.py":W,"../openmotor_py/motorlib/grains/cGrain.py":$,"../openmotor_py/motorlib/grains/conical.py":j,"../openmotor_py/motorlib/grains/custom.py":Y,"../openmotor_py/motorlib/grains/dGrain.py":q,"../openmotor_py/motorlib/grains/endBurner.py":X,"../openmotor_py/motorlib/grains/finocyl.py":K,"../openmotor_py/motorlib/grains/moonBurner.py":H,"../openmotor_py/motorlib/grains/rodTube.py":J,"../openmotor_py/motorlib/grains/star.py":Q,"../openmotor_py/motorlib/grains/xCore.py":Z,"../openmotor_py/motorlib/motor.py":ee,"../openmotor_py/motorlib/nozzle.py":ne,"../openmotor_py/motorlib/propellant.py":te,"../openmotor_py/motorlib/properties.py":re,"../openmotor_py/motorlib/simResult.py":se,"../openmotor_py/motorlib/units.py":ae});let M;async function L(){return M||(M=(async()=>{const t=await C();await t.loadPackage(["numpy","scipy"]);for(const[n,s]of Object.entries(ie)){const r=`/openmotor_py/${n.replace("../openmotor_py/","")}`;t.FS.mkdirTree(r.substring(0,r.lastIndexOf("/"))),t.FS.writeFile(r,s)}return await t.runPythonAsync(`import sys
-sys.path.insert(0, '/openmotor_py')`),t})()),M}async function S(t,n={}){const s=await L();for(const[r,i]of Object.entries(n))s.globals.set(r,typeof i=="string"?i:JSON.stringify(i));const a=await s.runPythonAsync(t);return JSON.parse(a)}function oe(t){return S(`
+`,ae=Object.assign({"../openmotor_py/mathlib/__init__.py":C,"../openmotor_py/mathlib/_find_perimeter.py":k,"../openmotor_py/motorlib/__init__.py":G,"../openmotor_py/motorlib/constants.py":I,"../openmotor_py/motorlib/geometry.py":z,"../openmotor_py/motorlib/grain.py":O,"../openmotor_py/motorlib/grains/__init__.py":B,"../openmotor_py/motorlib/grains/bates.py":U,"../openmotor_py/motorlib/grains/cGrain.py":W,"../openmotor_py/motorlib/grains/conical.py":$,"../openmotor_py/motorlib/grains/custom.py":j,"../openmotor_py/motorlib/grains/dGrain.py":Y,"../openmotor_py/motorlib/grains/endBurner.py":q,"../openmotor_py/motorlib/grains/finocyl.py":X,"../openmotor_py/motorlib/grains/moonBurner.py":K,"../openmotor_py/motorlib/grains/rodTube.py":H,"../openmotor_py/motorlib/grains/star.py":J,"../openmotor_py/motorlib/grains/xCore.py":Q,"../openmotor_py/motorlib/motor.py":Z,"../openmotor_py/motorlib/nozzle.py":ee,"../openmotor_py/motorlib/propellant.py":ne,"../openmotor_py/motorlib/properties.py":te,"../openmotor_py/motorlib/simResult.py":re,"../openmotor_py/motorlib/units.py":se});let x;async function F(){return x||(x=(async()=>{const t=await V();await t.loadPackage(["numpy","scipy"]);for(const[n,r]of Object.entries(ae)){const a=`/openmotor_py/${n.replace("../openmotor_py/","")}`;t.FS.mkdirTree(a.substring(0,a.lastIndexOf("/"))),t.FS.writeFile(a,r)}return await t.runPythonAsync(`import sys
+sys.path.insert(0, '/openmotor_py')`),t})()),x}async function D(t,n={}){const r=await F();for(const[a,s]of Object.entries(n))r.globals.set(a,typeof s=="string"?s:JSON.stringify(s));const i=await r.runPythonAsync(t);return JSON.parse(i)}function ie(t){return D(`
 import json, traceback
 result = {}
 try:
@@ -2988,7 +2988,7 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{motor_input_json:t})}function le(t){return S(`
+`,{motor_input_json:t})}function oe(t){return D(`
 import json, traceback
 result = {}
 try:
@@ -2997,7 +2997,7 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{motor_input_json:t})}function me(t){return S(`
+`,{motor_input_json:t})}function le(t){return D(`
 import json, traceback
 result = {}
 try:
@@ -3007,7 +3007,7 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{input_yaml:t})}function pe(t,n){return S(`
+`,{input_yaml:t})}function me(t,n){return D(`
 import json, traceback
 result = {}
 try:
@@ -3034,9 +3034,9 @@ try:
 except Exception as exc:
     result = {'error': str(exc), 'traceback': traceback.format_exc()}
 json.dumps(result)
-`,{motor_input_json:t,grain_index_json:String(n)})}const V="openmotor-web-state-v1",fe=["Neither","Top","Bottom","Both"],ue=t=>Number.isFinite(t)?t:0,d=(t,n=3)=>t==null?"—":Number(t).toFixed(n),w=t=>t.replace(/([A-Z])/g," $1").replace(/^./,n=>n.toUpperCase()),c=t=>structuredClone(t);function de(){try{const t=localStorage.getItem(V);if(!t)return c(x);const n=JSON.parse(t);return(n==null?void 0:n.motor)||c(x)}catch{return c(x)}}const e={motor:de(),selectedGrain:0,result:null,grainPreview:null,previewLayer:0,status:"Booting…",running:!1,previewing:!1,fileName:"untitled.ric",history:[],future:[]},ge=document.getElementById("app");function N(){e.history.push(c(e.motor)),e.history.length>100&&e.history.shift(),e.future=[]}function R(){try{localStorage.setItem(V,JSON.stringify({motor:e.motor}))}catch{}}function T(t){N(),t(),e.grainPreview=null,R()}function ce(){e.history.length&&(e.future.push(c(e.motor)),e.motor=e.history.pop(),e.selectedGrain=Math.min(e.selectedGrain,Math.max(0,e.motor.grains.length-1)),e.grainPreview=null,e.status="Undo.",R(),o())}function he(){e.future.length&&(e.history.push(c(e.motor)),e.motor=e.future.pop(),e.selectedGrain=Math.min(e.selectedGrain,Math.max(0,e.motor.grains.length-1)),e.grainPreview=null,e.status="Redo.",R(),o())}function ye(t){return Object.entries(t.properties).map(([n,s])=>typeof s=="boolean"?`<label class="field"><span>${w(n)}</span><input data-scope="grain" data-key="${n}" type="checkbox" ${s?"checked":""}></label>`:n==="inhibitedEnds"?`<label class="field"><span>${w(n)}</span><select data-scope="grain" data-key="${n}">${fe.map(a=>`<option ${a===s?"selected":""}>${a}</option>`).join("")}</select></label>`:`<label class="field"><span>${w(n)}</span><input data-scope="grain" data-key="${n}" type="number" step="any" value="${s}"></label>`).join("")}function D(t,n,s=[]){return Object.entries(t).map(([a,r])=>Array.isArray(r)||typeof r=="object"?"":`<label class="field"><span>${w(a)}</span><input data-scope="${n}" data-key="${a}" type="${s.includes(a)||typeof r=="string"?"text":"number"}" ${typeof r=="number"?'step="any"':""} value="${r}"></label>`).join("")}function be(){var b,y,_,v;if((b=e.grainPreview)!=null&&b.error)return`<pre class="error">${e.grainPreview.error}
+`,{motor_input_json:t,grain_index_json:String(n)})}const N="openmotor-web-state-v1",pe=["Neither","Top","Bottom","Both"],E=[["force","Force"],["pressure","Pressure"],["kn","Kn"],["mass","Mass"],["massFlow","Mass Flow"],["massFlux","Mass Flux"],["exitPressure","Exit Pressure"],["dThroat","Throat Change"]],fe=t=>Number.isFinite(t)?t:0,m=(t,n=3)=>t==null?"—":Number(t).toFixed(n),T=t=>t.replace(/([A-Z])/g," $1").replace(/^./,n=>n.toUpperCase()),p=t=>structuredClone(t);function ue(){try{const t=localStorage.getItem(N);if(!t)return{motor:p(A),selectedPlots:["force","pressure","kn"]};const n=JSON.parse(t);return{motor:(n==null?void 0:n.motor)||p(A),selectedPlots:(n==null?void 0:n.selectedPlots)||["force","pressure","kn"]}}catch{return{motor:p(A),selectedPlots:["force","pressure","kn"]}}}const S=ue(),e={motor:S.motor,selectedPlots:S.selectedPlots,selectedGrain:0,result:null,grainPreview:null,previewLayer:0,status:"Booting…",running:!1,previewing:!1,fileName:"untitled.ric",history:[],future:[]},de=document.getElementById("app");function w(){e.history.push(p(e.motor)),e.history.length>100&&e.history.shift(),e.future=[]}function b(){try{localStorage.setItem(N,JSON.stringify({motor:e.motor,selectedPlots:e.selectedPlots}))}catch{}}function R(t){w(),t(),e.grainPreview=null,b()}function ge(){e.history.length&&(e.future.push(p(e.motor)),e.motor=e.history.pop(),e.selectedGrain=Math.min(e.selectedGrain,Math.max(0,e.motor.grains.length-1)),e.grainPreview=null,e.status="Undo.",b(),o())}function ce(){e.future.length&&(e.history.push(p(e.motor)),e.motor=e.future.pop(),e.selectedGrain=Math.min(e.selectedGrain,Math.max(0,e.motor.grains.length-1)),e.grainPreview=null,e.status="Redo.",b(),o())}function he(t){return Object.entries(t.properties).map(([n,r])=>typeof r=="boolean"?`<label class="field"><span>${T(n)}</span><input data-scope="grain" data-key="${n}" type="checkbox" ${r?"checked":""}></label>`:n==="inhibitedEnds"?`<label class="field"><span>${T(n)}</span><select data-scope="grain" data-key="${n}">${pe.map(i=>`<option ${i===r?"selected":""}>${i}</option>`).join("")}</select></label>`:`<label class="field"><span>${T(n)}</span><input data-scope="grain" data-key="${n}" type="number" step="any" value="${r}"></label>`).join("")}function P(t,n,r=[]){return Object.entries(t).map(([i,a])=>Array.isArray(a)||typeof a=="object"?"":`<label class="field"><span>${T(i)}</span><input data-scope="${n}" data-key="${i}" type="${r.includes(i)||typeof a=="string"?"text":"number"}" ${typeof a=="number"?'step="any"':""} value="${a}"></label>`).join("")}function ye(){var h,u,y,_;if((h=e.grainPreview)!=null&&h.error)return`<pre class="error">${e.grainPreview.error}
 
-${e.grainPreview.traceback||""}</pre>`;if(!((_=(y=e.grainPreview)==null?void 0:y.faceImage)!=null&&_.length))return'<p class="muted">No preview yet.</p>';const t=e.grainPreview.faceImage,n=t.length,s=((v=t[0])==null?void 0:v.length)||0;let a="";for(let m=0;m<n;m+=2)for(let p=0;p<s;p+=2){const g=t[m][p];let f="#0f172a";g===-1?f="#020617":g===0?f="#e2e8f0":f="#38bdf8",a+=`<rect x="${p/2}" y="${m/2}" width="1" height="1" fill="${f}" />`}const r=e.grainPreview.contours||[],l=r.slice(0,e.previewLayer+1).flatMap((m,p)=>m.map(g=>`<polyline fill="none" stroke="hsl(${200-p*10} 90% 65%)" stroke-width="0.9" points="${g.map(([f,A])=>`${f/2},${A/2}`).join(" ")}" opacity="0.95" />`)).join(""),h=Math.max(0,r.length-1);return`<div class="preview-meta"><span>Type: ${e.grainPreview.grainType}</span><span>Wall web: ${d(e.grainPreview.wallWeb)}</span></div><label class="field"><span>Regression layer ${e.previewLayer+1} / ${r.length||1}</span><input id="preview-layer" type="range" min="0" max="${h}" value="${Math.min(e.previewLayer,h)}" step="1"></label><svg viewBox="0 0 ${Math.ceil(s/2)} ${Math.ceil(n/2)}" class="grain-preview">${a}${l}</svg>`}function o(){var s,a,r,i,l,h,b,y,_,v,m,p,g,f,A;const t=e.motor.grains[e.selectedGrain],n=((s=e.result)==null?void 0:s.stats)||{};ge.innerHTML=`
+${e.grainPreview.traceback||""}</pre>`;if(!((y=(u=e.grainPreview)==null?void 0:u.faceImage)!=null&&y.length))return'<p class="muted">No preview yet.</p>';const t=e.grainPreview.faceImage,n=t.length,r=((_=t[0])==null?void 0:_.length)||0;let i="";for(let d=0;d<n;d+=2)for(let g=0;g<r;g+=2){const v=t[d][g];let c="#0f172a";v===-1?c="#020617":v===0?c="#e2e8f0":c="#38bdf8",i+=`<rect x="${g/2}" y="${d/2}" width="1" height="1" fill="${c}" />`}const a=e.grainPreview.contours||[],l=a.slice(0,e.previewLayer+1).flatMap((d,g)=>d.map(v=>`<polyline fill="none" stroke="hsl(${200-g*10} 90% 65%)" stroke-width="0.9" points="${v.map(([c,L])=>`${c/2},${L/2}`).join(" ")}" opacity="0.95" />`)).join(""),f=Math.max(0,a.length-1);return`<div class="preview-meta"><span>Type: ${e.grainPreview.grainType}</span><span>Wall web: ${m(e.grainPreview.wallWeb)}</span></div><label class="field"><span>Regression layer ${e.previewLayer+1} / ${a.length||1}</span><input id="preview-layer" type="range" min="0" max="${f}" value="${Math.min(e.previewLayer,f)}" step="1"></label><svg viewBox="0 0 ${Math.ceil(r/2)} ${Math.ceil(n/2)}" class="grain-preview">${i}${l}</svg>`}function be(){return`<div class="plot-selectors">${["plot-a","plot-b","plot-c"].map((t,n)=>`<label class="field"><span>Plot ${n+1}</span><select data-plot-index="${n}" id="${t}">${E.map(([r,i])=>`<option value="${r}" ${e.selectedPlots[n]===r?"selected":""}>${i}</option>`).join("")}</select></label>`).join("")}</div>`}function o(){var r,i,a;const t=e.motor.grains[e.selectedGrain],n=((r=e.result)==null?void 0:r.stats)||{};de.innerHTML=`
     <div class="shell">
       <header class="topbar">
         <div><h1>openMotor Web</h1><p class="muted">${e.fileName} · ${e.status} · autosaved locally</p></div>
@@ -3045,19 +3045,19 @@ ${e.grainPreview.traceback||""}</pre>`;if(!((_=(y=e.grainPreview)==null?void 0:y
       <div class="content">
         <aside class="sidebar">
           <div class="panel"><h2>Motor editor</h2><p class="muted">Configure grains, nozzle, propellant, and simulation settings.</p></div>
-          <div class="panel"><h3>Grains</h3><div class="grain-list">${e.motor.grains.map((u,P)=>`<button class="grain-item ${P===e.selectedGrain?"active":""}" data-grain-index="${P}">${P+1}. ${u.type}</button>`).join("")}</div><div class="row wrap"><select id="add-grain-type">${Object.keys(E).map(u=>`<option>${u}</option>`).join("")}</select><button id="add-grain">Add</button><button id="dup-grain">Duplicate</button><button id="del-grain" ${e.motor.grains.length<=1?"disabled":""}>Delete</button></div></div>
-          <div class="panel"><h3>Selected grain</h3><div class="fields">${ye(t)}</div></div>
-          <div class="panel"><h3>Nozzle</h3><div class="fields">${D(e.motor.nozzle,"nozzle")}</div></div>
-          <div class="panel"><h3>Propellant</h3><div class="fields">${D(e.motor.propellant,"propellant",["name"])}</div><h4>Burn rate tab</h4><div class="fields">${D(e.motor.propellant.tabs[0],"tab")}</div></div>
-          <div class="panel"><h3>Simulation config</h3><div class="fields">${D(e.motor.config,"config")}</div></div>
+          <div class="panel"><h3>Grains</h3><div class="grain-list">${e.motor.grains.map((s,l)=>`<button class="grain-item ${l===e.selectedGrain?"active":""}" data-grain-index="${l}">${l+1}. ${s.type}</button>`).join("")}</div><div class="row wrap"><select id="add-grain-type">${Object.keys(M).map(s=>`<option>${s}</option>`).join("")}</select><button id="add-grain">Add</button><button id="dup-grain">Duplicate</button><button id="del-grain" ${e.motor.grains.length<=1?"disabled":""}>Delete</button></div></div>
+          <div class="panel"><h3>Selected grain</h3><div class="fields">${he(t)}</div></div>
+          <div class="panel"><h3>Nozzle</h3><div class="fields">${P(e.motor.nozzle,"nozzle")}</div></div>
+          <div class="panel"><h3>Propellant</h3><div class="fields">${P(e.motor.propellant,"propellant",["name"])}</div><h4>Burn rate tab</h4><div class="fields">${P(e.motor.propellant.tabs[0],"tab")}</div></div>
+          <div class="panel"><h3>Simulation config</h3><div class="fields">${P(e.motor.config,"config")}</div></div>
         </aside>
         <main class="main">
-          <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, plots.</p></section>
-          <section class="stats-grid">${[["Designation",n.designation],["Impulse (Ns)",d(n.impulse)],["ISP (s)",d(n.isp)],["Burn time (s)",d(n.burnTime)],["Volume loading (%)",d(n.volumeLoading)],["Avg pressure (Pa)",d(n.avgPressure,0)],["Peak pressure (Pa)",d(n.peakPressure,0)],["Initial Kn",d(n.initialKn)],["Peak Kn",d(n.peakKn)],["Propellant mass (kg)",d(n.propellantMass)]].map(([u,P])=>`<div class="stat"><span>${u}</span><strong>${P??"—"}</strong></div>`).join("")}</section>
-          <section class="panel results-layout"><div><h3>Alerts</h3>${(a=e.result)!=null&&a.error?`<pre class="error">${e.result.error}
+          <section class="panel hero"><h2>Results</h2><p class="muted">Aiming toward desktop openMotor: stats, alerts, preview, and configurable plots.</p></section>
+          <section class="stats-grid">${[["Designation",n.designation],["Impulse (Ns)",m(n.impulse)],["ISP (s)",m(n.isp)],["Burn time (s)",m(n.burnTime)],["Volume loading (%)",m(n.volumeLoading)],["Avg pressure (Pa)",m(n.avgPressure,0)],["Peak pressure (Pa)",m(n.peakPressure,0)],["Initial Kn",m(n.initialKn)],["Peak Kn",m(n.peakKn)],["Propellant mass (kg)",m(n.propellantMass)]].map(([s,l])=>`<div class="stat"><span>${s}</span><strong>${l??"—"}</strong></div>`).join("")}</section>
+          <section class="panel results-layout"><div><h3>Alerts</h3>${(i=e.result)!=null&&i.error?`<pre class="error">${e.result.error}
 
-${e.result.traceback||""}</pre>`:""}<ul class="alerts">${(((r=e.result)==null?void 0:r.alerts)||[]).map(u=>`<li><strong>${u.level}</strong> ${u.type}: ${u.description}${u.location?` <span class="muted">(${u.location})</span>`:""}</li>`).join("")||'<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain regression preview</h3>${be()}</div></section>
-          <section class="panel"><h3>Plots</h3>${F("force","Force",(l=(i=e.result)==null?void 0:i.channels)==null?void 0:l.time,(b=(h=e.result)==null?void 0:h.channels)==null?void 0:b.force)}${F("pressure","Pressure",(_=(y=e.result)==null?void 0:y.channels)==null?void 0:_.time,(m=(v=e.result)==null?void 0:v.channels)==null?void 0:m.pressure)}${F("kn","Kn",(g=(p=e.result)==null?void 0:p.channels)==null?void 0:g.time,(A=(f=e.result)==null?void 0:f.channels)==null?void 0:A.kn)}</section>
+${e.result.traceback||""}</pre>`:""}<ul class="alerts">${(((a=e.result)==null?void 0:a.alerts)||[]).map(s=>`<li><strong>${s.level}</strong> ${s.type}: ${s.description}${s.location?` <span class="muted">(${s.location})</span>`:""}</li>`).join("")||'<li class="muted">No alerts</li>'}</ul></div><div><h3>Grain regression preview</h3>${ye()}</div></section>
+          <section class="panel"><div class="row wrap between"><h3>Plots</h3></div>${be()}${e.selectedPlots.map(s=>{var l,f,h,u,y;return _e(s,((l=E.find(([_])=>_===s))==null?void 0:l[1])||s,(h=(f=e.result)==null?void 0:f.channels)==null?void 0:h.time,(y=(u=e.result)==null?void 0:u.channels)==null?void 0:y[s])}).join("")}</section>
         </main>
       </div>
-    </div>`,Pe()}function F(t,n,s,a){if(!s||!a||!s.length||!a.length)return`<div class="chart-wrap"><h4>${n}</h4><p class="muted">No data yet.</p></div>`;const r=900,i=220,l=28,h=Math.min(...s),b=Math.max(...s),y=Math.min(...a),_=Math.max(...a),v=b-h||1,m=_-y||1,p=s.map((g,f)=>`${l+(g-h)/v*(r-l*2)},${i-l-(a[f]-y)/m*(i-l*2)}`).join(" ");return`<div class="chart-wrap"><h4>${n}</h4><svg viewBox="0 0 ${r} ${i}" class="chart"><polyline fill="none" stroke="#60a5fa" stroke-width="2" points="${p}" /></svg></div>`}async function _e(){e.status="Exporting .ric…",o();const t=await le(e.motor);if(t.error){e.result=t,e.status="Export failed.",o();return}const n=new Blob([t.yaml],{type:"application/x-yaml"}),s=URL.createObjectURL(n),a=document.createElement("a");a.href=s,a.download=e.fileName||"motor.ric",a.click(),URL.revokeObjectURL(s),e.status="Saved .ric file.",o()}async function ve(t){const n=await t.text();e.status="Importing .ric…",o();const s=await me(n);s.error?(e.result=s,e.status="Import failed."):(N(),e.motor=s.motor,e.fileName=t.name||"imported.ric",e.selectedGrain=0,e.result=null,e.grainPreview=null,e.status="Imported .ric file.",R()),o()}async function Re(){var t;e.previewing=!0,e.status="Generating grain preview…",o();try{e.grainPreview=await pe(e.motor,e.selectedGrain),e.previewLayer=Math.max(0,(((t=e.grainPreview.contours)==null?void 0:t.length)||1)-1),e.status=e.grainPreview.error?"Preview failed.":"Preview ready."}catch(n){e.grainPreview={error:String((n==null?void 0:n.stack)||n)},e.status="Preview failed."}finally{e.previewing=!1,o()}}function Pe(){var t;document.querySelectorAll("[data-grain-index]").forEach(n=>n.onclick=()=>{e.selectedGrain=Number(n.dataset.grainIndex),e.grainPreview=null,o()}),document.getElementById("new-motor").onclick=()=>{N(),e.motor=c(x),e.selectedGrain=0,e.result=null,e.grainPreview=null,e.fileName="untitled.ric",e.status="Reset.",R(),o()},document.getElementById("undo").onclick=ce,document.getElementById("redo").onclick=he,document.getElementById("open-ric").onclick=()=>document.getElementById("ric-file-input").click(),document.getElementById("ric-file-input").onchange=async n=>{var a;const s=(a=n.target.files)==null?void 0:a[0];s&&await ve(s),n.target.value=""},document.getElementById("save-ric").onclick=_e,document.getElementById("preview-grain").onclick=Re,document.getElementById("add-grain").onclick=()=>{const n=document.getElementById("add-grain-type").value;T(()=>{e.motor.grains.push({type:n,properties:c(E[n])}),e.selectedGrain=e.motor.grains.length-1}),o()},document.getElementById("dup-grain").onclick=()=>{T(()=>{const n=e.motor.grains[e.selectedGrain];e.motor.grains.splice(e.selectedGrain+1,0,c(n)),e.selectedGrain++}),o()},document.getElementById("del-grain").onclick=()=>{T(()=>{e.motor.grains.splice(e.selectedGrain,1),e.selectedGrain=Math.max(0,e.selectedGrain-1)}),o()},document.getElementById("run-sim").onclick=async()=>{e.running=!0,e.status="Running simulation in Pyodide…",o();try{e.result=await oe(e.motor),e.status=e.result.error?"Simulation failed.":"Simulation complete."}catch(n){e.result={error:String((n==null?void 0:n.stack)||n)},e.status="Simulation bootstrap failed."}finally{e.running=!1,o()}},(t=document.getElementById("preview-layer"))==null||t.addEventListener("input",n=>{e.previewLayer=Number(n.target.value),o()}),document.querySelectorAll("input[data-scope], select[data-scope]").forEach(n=>{n.onchange=s=>{const{scope:a,key:r}=s.target.dataset;let i;s.target.type==="checkbox"?i=s.target.checked:s.target.type==="number"?i=ue(parseFloat(s.target.value)):i=s.target.value,T(()=>{a==="grain"?e.motor.grains[e.selectedGrain].properties[r]=i:a==="nozzle"?e.motor.nozzle[r]=i:a==="propellant"?e.motor.propellant[r]=i:a==="tab"?e.motor.propellant.tabs[0][r]=i:a==="config"&&(e.motor.config[r]=i)})}})}async function Ae(){o();try{await L(),e.status="Pyodide ready."}catch{e.status="Pyodide failed to load."}R(),o()}Ae();
+    </div>`,Ae()}function _e(t,n,r,i){if(!r||!i||!r.length||!i.length)return`<div class="chart-wrap"><h4>${n}</h4><p class="muted">No data yet.</p></div>`;const a=900,s=220,l=28,f=Math.min(...r),h=Math.max(...r),u=Math.min(...i),y=Math.max(...i),_=h-f||1,d=y-u||1,g=r.map((v,c)=>`${l+(v-f)/_*(a-l*2)},${s-l-(i[c]-u)/d*(s-l*2)}`).join(" ");return`<div class="chart-wrap"><h4>${n}</h4><svg viewBox="0 0 ${a} ${s}" class="chart"><polyline fill="none" stroke="#60a5fa" stroke-width="2" points="${g}" /></svg></div>`}async function ve(){e.status="Exporting .ric…",o();const t=await oe(e.motor);if(t.error){e.result=t,e.status="Export failed.",o();return}const n=new Blob([t.yaml],{type:"application/x-yaml"}),r=URL.createObjectURL(n),i=document.createElement("a");i.href=r,i.download=e.fileName||"motor.ric",i.click(),URL.revokeObjectURL(r),e.status="Saved .ric file.",o()}async function Re(t){const n=await t.text();e.status="Importing .ric…",o();const r=await le(n);r.error?(e.result=r,e.status="Import failed."):(w(),e.motor=r.motor,e.fileName=t.name||"imported.ric",e.selectedGrain=0,e.result=null,e.grainPreview=null,e.status="Imported .ric file.",b()),o()}async function Pe(){var t;e.previewing=!0,e.status="Generating grain preview…",o();try{e.grainPreview=await me(e.motor,e.selectedGrain),e.previewLayer=Math.max(0,(((t=e.grainPreview.contours)==null?void 0:t.length)||1)-1),e.status=e.grainPreview.error?"Preview failed.":"Preview ready."}catch(n){e.grainPreview={error:String((n==null?void 0:n.stack)||n)},e.status="Preview failed."}finally{e.previewing=!1,o()}}function Ae(){var t;document.querySelectorAll("[data-grain-index]").forEach(n=>n.onclick=()=>{e.selectedGrain=Number(n.dataset.grainIndex),e.grainPreview=null,o()}),document.getElementById("new-motor").onclick=()=>{w(),e.motor=p(A),e.selectedGrain=0,e.result=null,e.grainPreview=null,e.fileName="untitled.ric",e.status="Reset.",b(),o()},document.getElementById("undo").onclick=ge,document.getElementById("redo").onclick=ce,document.getElementById("open-ric").onclick=()=>document.getElementById("ric-file-input").click(),document.getElementById("ric-file-input").onchange=async n=>{var i;const r=(i=n.target.files)==null?void 0:i[0];r&&await Re(r),n.target.value=""},document.getElementById("save-ric").onclick=ve,document.getElementById("preview-grain").onclick=Pe,document.getElementById("add-grain").onclick=()=>{const n=document.getElementById("add-grain-type").value;R(()=>{e.motor.grains.push({type:n,properties:p(M[n])}),e.selectedGrain=e.motor.grains.length-1}),o()},document.getElementById("dup-grain").onclick=()=>{R(()=>{const n=e.motor.grains[e.selectedGrain];e.motor.grains.splice(e.selectedGrain+1,0,p(n)),e.selectedGrain++}),o()},document.getElementById("del-grain").onclick=()=>{R(()=>{e.motor.grains.splice(e.selectedGrain,1),e.selectedGrain=Math.max(0,e.selectedGrain-1)}),o()},document.getElementById("run-sim").onclick=async()=>{e.running=!0,e.status="Running simulation in Pyodide…",o();try{e.result=await ie(e.motor),e.status=e.result.error?"Simulation failed.":"Simulation complete."}catch(n){e.result={error:String((n==null?void 0:n.stack)||n)},e.status="Simulation bootstrap failed."}finally{e.running=!1,o()}},(t=document.getElementById("preview-layer"))==null||t.addEventListener("input",n=>{e.previewLayer=Number(n.target.value),o()}),document.querySelectorAll("[data-plot-index]").forEach(n=>n.onchange=r=>{e.selectedPlots[Number(r.target.dataset.plotIndex)]=r.target.value,b(),o()}),document.querySelectorAll("input[data-scope], select[data-scope]").forEach(n=>{n.onchange=r=>{const{scope:i,key:a}=r.target.dataset;if(i==null)return;let s;r.target.type==="checkbox"?s=r.target.checked:r.target.type==="number"?s=fe(parseFloat(r.target.value)):s=r.target.value,R(()=>{i==="grain"?e.motor.grains[e.selectedGrain].properties[a]=s:i==="nozzle"?e.motor.nozzle[a]=s:i==="propellant"?e.motor.propellant[a]=s:i==="tab"?e.motor.propellant.tabs[0][a]=s:i==="config"&&(e.motor.config[a]=s)})}})}async function Te(){o();try{await F(),e.status="Pyodide ready."}catch{e.status="Pyodide failed to load."}b(),o()}Te();
